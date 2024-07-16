@@ -1,0 +1,28 @@
+{
+  "name": "fmto",
+  "version": "1.0.0",
+  "description": "FMTO - A WebGPU based 3D Library",
+  "main": "src/index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zrecore/fmto.git"
+  },
+  "keywords": [
+    "WebGPU",
+    "Math",
+    "Library",
+    "3D"
+  ],
+  "author": "Alex Albino <webmaster@alexventure.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zrecore/fmto/issues"
+  },
+  "homepage": "https://github.com/zrecore/fmto#readme"
+}
