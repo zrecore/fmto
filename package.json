@@ -1,7 +1,7 @@
 {
   "name": "fmto",
   "version": "1.0.0",
-  "description": "FMTO - A WebGPU based 3D Library",
+  "description": "FMTO - A WebGPU based Math Library",
   "main": "src/index.js",
   "directories": {
     "test": "test"

@@ -1,2 +1,2 @@
 # fmto
-FMTO - WebGPU based 3D Library
+FMTO - WebGPU based Math Library
