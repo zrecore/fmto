@@ -21,7 +21,10 @@
     "WebGPU",
     "Math",
     "Library",
-    "3D"
+    "3D",
+    "Calculus",
+    "Linear Algebra",
+    "Differential Equations"
   ],
   "author": "Alex Albino <webmaster@alexventure.com>",
   "license": "MIT",
