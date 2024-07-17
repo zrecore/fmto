@@ -48,3 +48,5 @@ class core
         return this._device;
     }
 }
+
+export { core };

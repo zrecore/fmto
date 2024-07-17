@@ -1,8 +1,11 @@
 /**
- * Breadth First Search
+ * FMTO - Calculus library, WebGPU accelerated.
+ * 
  * @author Alex Albino <webmaster@alexventure.com>
  * @version 1.0.0
  */
-export function breadthFirst () {
+
+export class calculus
+{
     //
-};
+}

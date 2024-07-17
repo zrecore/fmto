@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "FMTO - A WebGPU based Math Library",
   "main": "src/index.js",
+  "type": "module",
   "directories": {
     "test": "test"
   },
@@ -10,8 +11,8 @@
     "dist"
   ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": ""
+    "test": "node test/index.test.mjs",
+    "build": "echo \"Error: no build specified\" && exit 1"
   },
   "repository": {
     "type": "git",
@@ -33,6 +34,7 @@
   },
   "homepage": "https://github.com/zrecore/fmto#readme",
   "devDependencies": {
+    "express": "^4.19.2",
     "puppeteer": "^22.13.0"
   }
 }

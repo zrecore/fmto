@@ -5,8 +5,8 @@
  * @version 1.0.0
  */
 
-import { breadthFirst } from "./breadthFirst";
-import { depthFirst } from "./depthFirst"; 
+import { breadthFirst } from "./breadthFirst.mjs"
+import { depthFirst } from "./depthFirst.mjs"
 
 export {
     depthFirst,
