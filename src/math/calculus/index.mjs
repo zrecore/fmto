@@ -5,7 +5,7 @@
  * @version 1.0.0
  */
 
-export class calculus
+export class Calculus
 {
     //
 }

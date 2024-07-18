@@ -5,6 +5,6 @@
  * @version 1.0.0
  */
 
-import { bubble } from './bubble.mjs'
+import Bubble from './bubble.mjs'
 
-export { bubble }
+export { Bubble }

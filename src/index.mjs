@@ -7,26 +7,26 @@
  */
 
 // Core
-import { core } from './core/index.mjs'
+import Core from './core/index.mjs'
 
 // CS (Computer Science)
 import {
-    breadthFirst,
-    depthFirst
-} from 'cs/search/index.mjs'
+    BreadthFirst,
+    DepthFirst
+} from './cs/search/index.mjs'
 
 // Math
-import {calculus} from './math/calculus/index.mjs'
-import {linearAlgebra} from './math/linearAlgebra/index.mjs'
-import {differentialEquations} from './math/differentialEquations/index.mjs'
+import {Calculus} from './math/calculus/index.mjs'
+import {LinearAlgebra} from './math/linearAlgebra/index.mjs'
+import {DifferentialEquations} from './math/differentialEquations/index.mjs'
 
 export {
-    core,
+    Core,
 
-    breadthFirst,
-    depthFirst,
+    BreadthFirst,
+    DepthFirst,
 
-    linearAlgebra,
-    calculus,
-    differentialEquations
+    LinearAlgebra,
+    Calculus,
+    DifferentialEquations
 }
