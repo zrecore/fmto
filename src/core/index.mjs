@@ -3,24 +3,24 @@
  */
 class core
 {
-    static _adapter = null;
-    static _device = null;
+    static _adapter = null
+    static _device = null
 
     async initializeAdapter()
     {
         if (!navigator.gpu)
         {
-            return false;
+            return false
         }
 
-        this.adapter = await navigator.gpu.requestAdapter();
+        this.adapter = await navigator.gpu.requestAdapter()
 
         if (!this.adapter)
         {
-            return false;
+            return false
         }
 
-        return true;
+        return true
     }
 
     async initializeDevice()
@@ -29,24 +29,24 @@ class core
         {
             if (!this.initializeAdapter())
             {
-                return false;
+                return false
             }
         }
 
-        this._device = await this.adapter().requestDevice();
+        this._device = await this.adapter().requestDevice()
 
-        return true;
+        return true
     }
 
     get adapter()
     {
-        return this._adapter;
+        return this._adapter
     }
 
     get device()
     {
-        return this._device;
+        return this._device
     }
 }
 
-export { core };
+export { core }
