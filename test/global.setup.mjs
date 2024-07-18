@@ -9,7 +9,7 @@ import promises from 'fs';
 import os from 'os';
 import path from 'path';
 import puppeteer from 'puppeteer';
-// import jestEnvironmentNode
+
 const {
     mkdir,
     writeFile
@@ -26,7 +26,7 @@ export default async function () {
         headless: false,
         args: [
             '--enable-gpu',
-            // '--headless',
+            '--headless',
             '--hide-scrollbars',
             '--mute-audio'
         ]
@@ -34,8 +34,7 @@ export default async function () {
 
     // Store the browser instance so we can teardown it later
     // this global is only available in the teardown but not in TestEnvironments
-    globalThis.__BROWSER_GLOBAL__ = browser
-    console.log("DIR is", DIR)
+    global.__BROWSER_GLOBAL__ = browser
     // Use the file system to expose the wsEndpoint for TestEnvironments
     await promises.mkdir(
         DIR,

@@ -60,5 +60,3 @@ export default class PuppeteerEnviornment extends NodeEnvironment
         return super.getVmContext()
     }
 }
-
-export { PuppeteerEnviornment }

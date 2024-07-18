@@ -21,7 +21,10 @@ export default async function ()
     await global.__BROWSER_GLOBAL__.close()
 
     // Clean up the wsEndpoint file
-    await fs.rm(DIR, { recursive: true, force: true }, (error) => {
-        // NOOP
-    })
+    if (!process.env.FMTO_TEST_DONT_CLEAN)
+    {
+        await fs.rm(DIR, { recursive: true, force: true }, (error) => {
+            // NOOP
+        })
+    }
 }

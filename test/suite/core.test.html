@@ -10,7 +10,38 @@
 		</style>
 	</head>
 	<body>
+		<h1>core</h1>
+		<p id="hasAdapter"></p>
+		<p id="hasDevice"></p>
 		<canvas id="gpuCanvas"></canvas>
-		<script src="/../../src/core/index.js" type="module"></script>
+		<script type="module">
+			import Core from '/src/core/index.mjs'
+			const core = new Core()
+			
+			
+
+			const hasAdapter = await core.initializeAdapter()
+			const hasDevice = await core.initializeDevice()
+
+			if (hasAdapter)
+			{
+				const adapterInitialized = new CustomEvent('adapter-initialized')
+				document.getElementById('hasAdapter').textContent = 'true'
+				window.dispatchEvent(adapterInitialized)
+			} else {
+				document.getElementById('hasAdapter').textContent = 'false'
+			}
+
+			if (hasDevice)
+			{
+				const deviceInitialized = new CustomEvent('device-initialized')
+				document.getElementById('hasDevice').textContent = 'true'
+				window.dispatchEvent(deviceInitialized)
+			} else {
+				document.getElementById('hasDevice').textContent = 'false'
+			}
+			
+
+		</script>
 	</body>
 </html>

@@ -1,10 +1,12 @@
 /**
  * FMTO - Core
  */
-class core
+class Core
 {
     static _adapter = null
     static _device = null
+
+    constructor() {}
 
     async initializeAdapter()
     {
@@ -33,7 +35,7 @@ class core
             }
         }
 
-        this._device = await this.adapter().requestDevice()
+        this._device = await this.adapter.requestDevice()
 
         return true
     }
@@ -43,10 +45,20 @@ class core
         return this._adapter
     }
 
+    set adapter(a)
+    {
+        this._adapter = a
+    }
+
     get device()
     {
         return this._device
     }
+
+    set device(d)
+    {
+        this._device = d
+    }
 }
 
-export { core }
+export default Core
