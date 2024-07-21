@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>FMTO - math/linear-algebra/dot-product.test</title>
+		<style>
+			body { margin: 0; }
+			canvas { display: block; }
+		</style>
+	</head>
+	<body>
+		<h1>linear-algebra/dot-product</h1>
+		<p id="hasAdapter"></p>
+		<p id="hasDevice"></p>
+        <p id="hasLinearAlgebra"></p>
+        <p id="dotProduct3"></p>
+		<canvas id="gpuCanvas"></canvas>
+		<script type="module">
+			import { Core, LinearAlgebra } from '/src/index.mjs'
+            import { Vector3D } from '/src/lib/vector.mjs'
+
+			const core = new Core()
+			
+			const hasAdapter = await core.initializeAdapter()
+			const hasDevice = await core.initializeDevice()
+
+            const linearAlgebra = new LinearAlgebra(
+                core.device
+            )
+
+			if (hasAdapter)
+			{
+				const adapterInitialized = new CustomEvent('adapter-initialized')
+				document.getElementById('hasAdapter').textContent = 'true'
+				window.dispatchEvent(adapterInitialized)
+			} else {
+				document.getElementById('hasAdapter').textContent = 'false'
+			}
+
+			if (hasDevice)
+			{
+				const deviceInitialized = new CustomEvent('device-initialized')
+				document.getElementById('hasDevice').textContent = 'true'
+				window.dispatchEvent(deviceInitialized)
+			} else {
+				document.getElementById('hasDevice').textContent = 'false'
+			}
+
+            if (linearAlgebra)
+            {
+                document.getElementById('hasLinearAlgebra').textContent = true
+            }
+            
+            const e1 = new Vector3D(9.0, 2.0, 7.0)
+            const e2 = new Vector3D(4.0, 8.0, 10.0)
+
+            const result = await linearAlgebra.dotProduct3(e1, e2);
+			
+            if (result)
+            {
+                // (9 * 4) + (2 * 8) + (7 * 10)
+                // 36 + 16 + 70
+                //
+                // Expect 122
+                document.getElementById('dotProduct3').textContent = result
+            }
+		</script>
+	</body>
+</html>

@@ -13,7 +13,7 @@
   "scripts": {
     "test-server": "NODE_OPTIONS=--experimental-vm-modules node test.server.mjs",
     "test": "cd test && NODE_OPTIONS=--experimental-vm-modules jest",
-    "test-watch": "cd test && FMTO_TEST_DONT_CLEAN=1 NODE_OPTIONS=--experimental-vm-modules jest --watch",
+    "test-watch": "cd test && FMTO_TEST_DONT_CLEAN=1 NODE_OPTIONS=--experimental-vm-modules jest --watchAll",
     "build": "echo \"Error: no build specified\" && exit 1"
   },
   "repository": {

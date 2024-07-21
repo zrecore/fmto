@@ -7,6 +7,10 @@ FMTO - WebGPU based Math Library
 This library should implement of Mathematical and Computer Science algorithms that are executed within a machine's GPU via WebGPU.
 
 
+## WebGPU Arithmetic
+
+See https://www.w3.org/TR/WGSL/#arithmetic-expr
+
 ## Run Tests
 
 FMTO leverages Puppeteer and Jest. We run a local test server, and a headless Chrome browser with WebGPU support enabled to run our tests.
