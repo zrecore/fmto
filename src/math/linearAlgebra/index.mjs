@@ -141,7 +141,8 @@ export class LinearAlgebra
         stagingBuffer.unmap()
         const result = new Float32Array(data)
 
-        console.log(result)
+        // Just get the one entry in our array buffer
+        console.log(result[0])
 
         return result
     }
