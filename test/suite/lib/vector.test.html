@@ -10,11 +10,18 @@
 	</head>
 	<body>
 		<h1>lib/vector</h1>
-        <p id="hasLibVector"></p>
+
         <p id="vector2D"></p>
+        <p id="vector2D_yonly"></p>
+
         <p id="vector3D"></p>
+        <p id="vector3D_zonly"></p>
+
         <p id="vector4D"></p>
+        <p id="vector4D_wonly"></p>
+
         <p id="vectorND"></p>
+
 		<script type="module">
 			import { Core } from '/src/index.mjs'
             import { Vector2D, Vector3D, Vector4D, VectorND } from '/src/lib/vector.mjs'
@@ -26,8 +33,15 @@
 
 			let result = null
             const vec2d = new Vector2D(2.0, 3.0)
+
+            const vec2d_yonly = new Vector2D()
+            vec2d_yonly.y = 3
+
             const vec3d = new Vector3D(5.0, 6.0, 7.0)
+            const vec3d_zonly = new Vector3D(0.0, 0.0, 7.0)
+
             const vec4d = new Vector4D(1.0, 4.0, 9.0, 10.0)
+            const vec4d_wonly = new Vector4D(0.0, 0.0, 0.0, 10.0)
 
             const vecNd = new VectorND([11.0, 13.0, 23.0, 42.0, 88.0])
 
@@ -36,12 +50,24 @@
                 .textContent = vec2d.x + ', ' + vec2d.y
 
             document
+                .getElementById('vector2D_yonly')
+                .textContent = vec2d_yonly.x + ', ' + vec2d_yonly.y
+
+            document
                 .getElementById('vector3D')
                 .textContent = vec3d.x + ', ' + vec3d.y + ', ' + vec3d.z
 
             document
+                .getElementById('vector3D_zonly')
+                .textContent = vec3d_zonly.x + ', ' + vec3d_zonly.y + ', ' + vec3d_zonly.z
+
+            document
                 .getElementById('vector4D')
                 .textContent = vec4d.x + ', ' + vec4d.y + ', ' + vec4d.z + ', ' + vec4d.w
+            
+            document
+                .getElementById('vector4D_wonly')
+                .textContent = vec4d_wonly.x + ', ' + vec4d_wonly.y + ', ' + vec4d_wonly.z + ', ' + vec4d_wonly.w
 
             document
                 .getElementById('vectorND')

@@ -2,6 +2,7 @@ class VectorND
 {
     constructor(entries)
     {
+        if (!entries) entries = []
         this._entries = entries
     }
    
@@ -14,11 +15,10 @@ class VectorND
     get x()
     {
         let x = null
-        console.log(this._entries)
-        if (this._entries != null && this._entries.length > 0)
-        {
-            x = this._entries[0]
-        }
+        
+        if (!this._entries[0]) this._entries[0] = 0
+        
+        x = this._entries[0]
 
         return x
     }
@@ -41,10 +41,11 @@ class VectorND
     get y()
     {
         let y = null
-        if (this._entries != null && this._entries.length > 1)
-        {
-            y = this._entries[1]
-        }
+
+        if (!this._entries[0]) this._entries[0] = 0
+        if (!this._entries[1]) this._entries[1] = 0
+
+        y = this._entries[1]
 
         return y
     }
@@ -69,10 +70,11 @@ class VectorND
     get z()
     {
         let z = null
-        if (this._entries != null && this._entries.length > 2)
-        {
-            z = this._entries[2]
-        }
+        if (!this._entries[0]) this._entries[0] = 0
+        if (!this._entries[1]) this._entries[1] = 0
+        if (!this._entries[2]) this._entries[2] = 0
+        
+        z = this._entries[2]
 
         return z
     }
@@ -95,10 +97,12 @@ class VectorND
     get w()
     {
         let w = null
-        if (this._entries != null && this._entries.length > 3)
-        {
-            w = this._entries[3]
-        }
+        if (!this._entries[0]) this._entries[0] = 0
+        if (!this._entries[1]) this._entries[1] = 0
+        if (!this._entries[2]) this._entries[2] = 0
+        if (!this._entries[3]) this._entries[3] = 0
+
+        w = this._entries[3]
 
         return w
     }
