@@ -14,7 +14,12 @@ describe('math/linear-algebra/dot-product', () => {
         await page.close()
     })
 
-    it('should calculate the dot product of [9.0, 2.0. 7.0] * [4.0, 8.0, 10.0] as 122', async () => {
+    it('should calculate the dot product of [4.0, 8.0] * [7.0, 3.0] as 52', async () => {
+        let text = await page.evaluate( () => document.getElementById('dotProduct2').textContent )
+        expect(text).toBe('52')
+    })
+
+    it('should calculate the dot product of [9.0, 2.0, 7.0] * [4.0, 8.0, 10.0] as 122', async () => {
         let text = await page.evaluate( () => document.getElementById('dotProduct3').textContent )
         expect(text).toBe('122')
     })

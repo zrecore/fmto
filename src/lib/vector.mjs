@@ -12,6 +12,11 @@ class VectorND
         return this._entries.length
     }
 
+    get entries()
+    {
+        return this._entries
+    }
+
     get x()
     {
         let x = null

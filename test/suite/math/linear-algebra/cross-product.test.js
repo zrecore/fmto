@@ -21,7 +21,7 @@ describe('math/linear-algebra/cross-product', () => {
 
     }, timeout)
 
-    it('should calculate the dot product of [9.0, 2.0. 7.0] * [4.0, 8.0, 10.0] as 122', async () => {
+    it('should calculate the cross product of [9.0, 2.0. 7.0] * [4.0, 8.0, 10.0] as [-3, 6, -3]', async () => {
         let text = await page.evaluate( () => document.getElementById('crossProduct3').textContent )
         expect(text).toBe('-3,6,-3')
     })

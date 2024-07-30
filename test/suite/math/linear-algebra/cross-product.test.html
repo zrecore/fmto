@@ -14,7 +14,7 @@
         <p id="crossProduct3"></p>
 		<script type="module">
 			import { Core, LinearAlgebra } from '/src/index.mjs'
-            import { Vector3D } from '/src/lib/vector.mjs'
+            import { Vector2D, Vector3D, Vector4D } from '/src/lib/vector.mjs'
 
 			const core = new Core()
 			
@@ -33,7 +33,7 @@
 				const e1 = new Vector3D(2.0, 3.0, 4.0)
 				const e2 = new Vector3D(5.0, 6.0, 7.0)
                 
-				result = await linearAlgebra.crossProduct3(e1, e2)
+				result = await linearAlgebra.crossProduct(e1, e2)
 			}
             
             if (result)

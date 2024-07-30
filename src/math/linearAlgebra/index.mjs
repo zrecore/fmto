@@ -24,12 +24,25 @@ export class LinearAlgebra
      * 
      * See https://webgpufundamentals.org/webgpu/lessons/webgpu-wgsl-function-reference.html
      */
-    async dotProduct3(e1, e2)
+    async dotProduct(e1, e2)
     {
+        if (e1.entries.length != e2.entries.length) {
+            throw "math/linearAlgebra dotProduct() arguments e1 and e2 must match dimensions."
+        }
+        if (e1.entries.length < 2) {
+            throw "math/linearAlgebra dotProduct() arguments e1 and e2 must be at least 2 dimensional."
+        }
+        if (e1.entries.length > 4) {
+            throw "math/linearAlgebra dotProduct() only supports up to 4 dimensions for arguments e1 and e2."
+        }
+
+        const dimCount = e1.entries.length
+        const e1_entries = e1.entries.join(', ')
+        const e2_entries = e2.entries.join(', ')
         // Create buffer in, buffer out
         // Create shader module to run dot()
         // Run module
-        // Return value
+        // Return value is a scalar value
         const BUFFER_SIZE = 4
         const shader = `
         @group(0) @binding(0)
@@ -37,8 +50,8 @@ export class LinearAlgebra
         @compute @workgroup_size(64)
         fn main()
         {
-            var e1 : vec3f = vec3f(${e1.x}, ${e1.y}, ${e1.z});
-            var e2 : vec3f = vec3f(${e2.x}, ${e2.y}, ${e2.z});
+            var e1 : vec${dimCount}f = vec${dimCount}f(${e1_entries});
+            var e2 : vec${dimCount}f = vec${dimCount}f(${e2_entries});
             output = dot(e1, e2);
         }
         `
@@ -150,17 +163,31 @@ export class LinearAlgebra
     /**
      * WebGPU cross()
      */
-    async crossProduct3(e1, e2)
+    async crossProduct(e1, e2)
     {
-        const BUFFER_SIZE = 12 // x is 4, y is 4, z is 4
+        if (e1.entries.length != e2.entries.length) {
+            throw "math/linearAlgebra crossProduct() arguments e1 and e2 must match dimensions."
+        }
+        if (e1.entries.length < 2) {
+            throw "math/linearAlgebra crossProduct() arguments e1 and e2 must be at least 2 dimensional."
+        }
+        if (e1.entries.length > 4) {
+            throw "math/linearAlgebra crossProduct() only supports up to 4 dimensions for arguments e1 and e2."
+        }
+
+        const dimCount = e1.entries.length
+        const e1_entries = e1.entries.join(', ')
+        const e2_entries = e2.entries.join(', ')
+
+        const BUFFER_SIZE = 4 * dimCount // x is 4, y is 4, z is 4
         const shader = `
         @group(0) @binding(0)
         var <storage, read_write> output: vec3f;
         @compute @workgroup_size(64)
         fn main()
         {
-            var e1 : vec3f = vec3f(${e1.x}, ${e1.y}, ${e1.z});
-            var e2 : vec3f = vec3f(${e2.x}, ${e2.y}, ${e2.z});
+            var e1 : vec${dimCount}f = vec${dimCount}f(${e1_entries});
+            var e2 : vec${dimCount}f = vec${dimCount}f(${e2_entries});
             output = cross(e1, e2);
         }
         `

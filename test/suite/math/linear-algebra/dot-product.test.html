@@ -11,16 +11,20 @@
 	<body>
 		<h1>linear-algebra/dot-product</h1>
         <p id="hasLinearAlgebra"></p>
+		<p id="dotProduct2"></p>
         <p id="dotProduct3"></p>
 		<script type="module">
 			import { Core, LinearAlgebra } from '/src/index.mjs'
-            import { Vector3D } from '/src/lib/vector.mjs'
+            import { Vector2D, Vector3D, Vector4D } from '/src/lib/vector.mjs'
 
 			const core = new Core()
 			
 			const hasAdapter = await core.initializeAdapter()
 			const hasDevice = await core.initializeDevice()
-			let result = null
+
+			let result_2d = null
+			let result_3d = null
+
 			if (hasAdapter && hasDevice) {
 				const linearAlgebra = new LinearAlgebra(
 					core.device
@@ -30,19 +34,31 @@
 					document.getElementById('hasLinearAlgebra').textContent = true
 				}
 				
-				const e1 = new Vector3D(9.0, 2.0, 7.0)
-				const e2 = new Vector3D(4.0, 8.0, 10.0)
+				const e1_2d = new Vector2D(4.0, 8.0)
+				const e2_2d = new Vector2D(7.0, 3.0)
 
-				result = await linearAlgebra.dotProduct3(e1, e2)
+				const e1_3d = new Vector3D(9.0, 2.0, 7.0)
+				const e2_3d = new Vector3D(4.0, 8.0, 10.0)
+
+				result_2d = await linearAlgebra.dotProduct(e1_2d, e2_2d)
+				result_3d = await linearAlgebra.dotProduct(e1_3d, e2_3d)
+
 			}
-            
-            if (result)
+            if (result_2d)
+            {
+                // (4 * 7) + (8 * 3)
+                // 28 + 24
+                //
+                // Expect 52
+                document.getElementById('dotProduct2').textContent = result_2d[0]
+            }
+            if (result_3d)
             {
                 // (9 * 4) + (2 * 8) + (7 * 10)
                 // 36 + 16 + 70
                 //
                 // Expect 122
-                document.getElementById('dotProduct3').textContent = result[0]
+                document.getElementById('dotProduct3').textContent = result_3d[0]
             }
 		</script>
 	</body>
