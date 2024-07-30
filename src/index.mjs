@@ -10,7 +10,8 @@
 import Core from './core/index.mjs'
 
 // Lib
-import { Vector2D, Vector3D, Vector4D, VectorND } from './lib/vector.mjs' 
+import { Vector2D, Vector3D, Vector4D, VectorND } from './lib/vector.mjs'
+import { Matrix2D, Matrix3D, Matrix4D, MatrixND } from './lib/matrix.mjs'
 
 // CS (Computer Science)
 import {
@@ -30,6 +31,11 @@ export {
     Vector3D,
     Vector4D,
     VectorND,
+
+    Matrix2D,
+    Matrix3D,
+    Matrix4D,
+    MatrixND,
 
     BreadthFirst,
     DepthFirst,

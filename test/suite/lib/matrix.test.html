@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>FMTO - lib/matrix.test</title>
+		<style>
+			body { margin: 0; }
+		</style>
+	</head>
+	<body>
+		<h1>lib/matrix</h1>
+
+        <p id="matrix2D"></p>
+		<script type="module">
+			import {
+                Core,
+                Matrix2D,
+                Matrix3D,
+                Matrix4D,
+                MatrixND,
+                Vector2D,
+                Vector3D,
+                Vector4D,
+                VectorND
+            } from '/src/index.mjs'
+
+			const core = new Core()
+			
+			const hasAdapter = await core.initializeAdapter()
+			const hasDevice = await core.initializeDevice()
+
+			let result = null
+            const mat2x2 = new Matrix2D()
+            
+            console.log('matrix 2x2', mat2x2)
+            document
+                .getElementById('matrix2D')
+                .textContent = mat2x2.toString()
+		</script>
+	</body>
+</html>
