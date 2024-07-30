@@ -2,7 +2,7 @@ class VectorND
 {
     constructor(entries)
     {
-        if (!entries) entries = []
+        if (!entries) entries = [0.0, 0.0]
         this._entries = entries
     }
    
@@ -132,6 +132,21 @@ class VectorND
             value = this._entries[index]
         }
         return value
+    }
+
+    entrySetAt(index, value)
+    {
+        if (!this._entries) this._entries = []
+
+        if (this._entries.length < index + 1)
+        {
+            for (var i = this._entries.length; i < index + 1; i++)
+            {
+                this._entries.push(0)
+            }
+        }
+
+        this._entries[index] = value
     }
     *getXY()
     {

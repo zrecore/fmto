@@ -21,6 +21,7 @@
         <p id="vector4D_wonly"></p>
 
         <p id="vectorND"></p>
+        <p id="vectorND_5thonly"></p>
 
 		<script type="module">
 			import { Core } from '/src/index.mjs'
@@ -38,13 +39,17 @@
             vec2d_yonly.y = 3
 
             const vec3d = new Vector3D(5.0, 6.0, 7.0)
-            const vec3d_zonly = new Vector3D(0.0, 0.0, 7.0)
+            const vec3d_zonly = new Vector3D()
+            vec3d_zonly.z = 7.0
 
             const vec4d = new Vector4D(1.0, 4.0, 9.0, 10.0)
-            const vec4d_wonly = new Vector4D(0.0, 0.0, 0.0, 10.0)
+            const vec4d_wonly = new Vector4D()
+            vec4d_wonly.w = 10.0
 
             const vecNd = new VectorND([11.0, 13.0, 23.0, 42.0, 88.0])
-
+            const vecNd_5thonly = new VectorND()
+            vecNd_5thonly.entrySetAt(4, 88.0)
+            
             document
                 .getElementById('vector2D')
                 .textContent = vec2d.x + ', ' + vec2d.y
@@ -72,6 +77,9 @@
             document
                 .getElementById('vectorND')
                 .textContent = vecNd.x + ', ' + vecNd.y + ', ' + vecNd.z + ', ' + vecNd.w + ', ' + vecNd.entryAt(4)
+            document
+                .getElementById('vectorND_5thonly')
+                .textContent = vecNd_5thonly.x + ', ' + vecNd_5thonly.y + ', ' + vecNd_5thonly.z + ', ' + vecNd_5thonly.w + ', ' + vecNd_5thonly.entryAt(4)
 		</script>
 	</body>
 </html>
