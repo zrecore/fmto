@@ -12,6 +12,7 @@
 		<h1>linear-algebra/cross-product</h1>
         <p id="hasLinearAlgebra"></p>
         <p id="crossProduct3"></p>
+		<p id="crossProduct4"></p>
 		<script type="module">
 			import { Core, LinearAlgebra } from '/src/index.mjs'
             import { Vector2D, Vector3D, Vector4D } from '/src/lib/vector.mjs'
@@ -20,7 +21,9 @@
 			
 			const hasAdapter = await core.initializeAdapter()
 			const hasDevice = await core.initializeDevice()
-			let result = null
+
+			let result_3d = null
+
 			if (hasAdapter && hasDevice) {
 				const linearAlgebra = new LinearAlgebra(
 					core.device
@@ -30,13 +33,14 @@
 					document.getElementById('hasLinearAlgebra').textContent = true
 				}
 				
-				const e1 = new Vector3D(2.0, 3.0, 4.0)
-				const e2 = new Vector3D(5.0, 6.0, 7.0)
+				const e1_3d = new Vector3D(2.0, 3.0, 4.0)
+				const e2_3d = new Vector3D(5.0, 6.0, 7.0)
                 
-				result = await linearAlgebra.crossProduct(e1, e2)
+				result_3d = await linearAlgebra.crossProduct(e1_3d, e2_3d)
 			}
             
-            if (result)
+			
+            if (result_3d)
             {
                 // (3 * 7) - (4 * 6) = -3
                 // (4 * 5) - (2 * 7) = 6
@@ -45,10 +49,11 @@
                 // Expect [-3, 6, -3]
                 document
                     .getElementById('crossProduct3')
-                    .textContent = result[0] + "," 
-                        + result[1] + "," 
-                        + result[2]
+                    .textContent = result_3d[0] + "," 
+                        + result_3d[1] + "," 
+                        + result_3d[2]
             }
+
 		</script>
 	</body>
 </html>

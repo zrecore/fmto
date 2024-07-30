@@ -168,11 +168,11 @@ export class LinearAlgebra
         if (e1.entries.length != e2.entries.length) {
             throw "math/linearAlgebra crossProduct() arguments e1 and e2 must match dimensions."
         }
-        if (e1.entries.length < 2) {
-            throw "math/linearAlgebra crossProduct() arguments e1 and e2 must be at least 2 dimensional."
+        if (e1.entries.length < 3) {
+            throw "math/linearAlgebra crossProduct() arguments e1 and e2 must be at least 3 dimensional."
         }
-        if (e1.entries.length > 4) {
-            throw "math/linearAlgebra crossProduct() only supports up to 4 dimensions for arguments e1 and e2."
+        if (e1.entries.length > 3) {
+            throw "math/linearAlgebra crossProduct() only supports up to 3 dimensions for arguments e1 and e2."
         }
 
         const dimCount = e1.entries.length
@@ -182,7 +182,7 @@ export class LinearAlgebra
         const BUFFER_SIZE = 4 * dimCount // x is 4, y is 4, z is 4
         const shader = `
         @group(0) @binding(0)
-        var <storage, read_write> output: vec3f;
+        var <storage, read_write> output: vec${dimCount}f;
         @compute @workgroup_size(64)
         fn main()
         {
@@ -290,8 +290,6 @@ export class LinearAlgebra
         stagingBuffer.unmap()
         const result = new Float32Array(data)
         // Just get the one entry in our array buffer
-        console.log(result)
-
         return result
     }
 }
