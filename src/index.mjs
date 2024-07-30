@@ -9,6 +9,9 @@
 // Core
 import Core from './core/index.mjs'
 
+// Lib
+import { Vector2D, Vector3D, Vector4D, VectorND } from './lib/vector.mjs' 
+
 // CS (Computer Science)
 import {
     BreadthFirst,
@@ -22,6 +25,11 @@ import {DifferentialEquations} from './math/differentialEquations/index.mjs'
 
 export {
     Core,
+
+    Vector2D,
+    Vector3D,
+    Vector4D,
+    VectorND,
 
     BreadthFirst,
     DepthFirst,
