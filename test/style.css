@@ -1,0 +1,8 @@
+body {
+    font-family: "Courier New";
+    margin: 0;
+    padding: 2rem;
+    background-color: #222;
+    color: #fff
+}
+canvas { display: block; }
