@@ -176,6 +176,12 @@ class VectorND
         yield this.z
         yield this.w
     }
+
+    toString()
+    {
+        let value = '[' + this.entries.join(', ') + ']'
+        return value
+    }
 }
 
 class Vector2D extends VectorND

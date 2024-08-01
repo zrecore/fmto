@@ -1,8 +1,36 @@
+:root {
+    --header-text-color: #9f9;
+    --header-text-color-alt: #4a4;
+    --body-background-color: #222;
+    --body-text-color: #fff;
+}
 body {
     font-family: "Courier New";
     margin: 0;
     padding: 2rem;
-    background-color: #222;
-    color: #fff
+    background-color: var( --body-background-color );
+    color: var( --body-text-color )
 }
 canvas { display: block; }
+
+body h1 {
+    color: var( --header-text-color );
+}
+
+body p { padding: 0.5rem; margin: 0; }
+
+body p:nth-child(even) {
+    background: linear-gradient(to right, var( --header-text-color ) 0.2rem, transparent 0.2rem)
+}
+body p:nth-child(odd) {
+    background: linear-gradient(to right, var( --header-text-color-alt ) 0.2rem, transparent 0.2rem)
+}
+
+body p:first-of-type {
+    border: solid 0px transparent;
+    border-top-left-radius: 0.2rem;
+}
+body p:last-of-type {
+    border: solid 0 transparent;
+    border-bottom-left-radius: 0.2rem;
+}
