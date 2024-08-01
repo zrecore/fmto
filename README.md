@@ -21,7 +21,7 @@ First, start the test server:
 npm run test-server
 ```
 
-![Screenshot of test-server command](./test/img/screenshot-run-server-tab.png)
+![Screenshot of test-server command](./test/img/screenshot-run-server-tab-80x30.png)
 
 This will start the test server at http://localhost:3000
 
@@ -36,4 +36,4 @@ npm run test
 # Watch for test changes and re-run tests
 npm run test-watch
 ```
-![Screenshot of test-watch command](./test/img/screenshot-run-test-watch-tab.png)
+![Screenshot of test-watch command](./test/img/screenshot-run-test-watch-tab-80x30.png)
