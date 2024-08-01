@@ -12,6 +12,8 @@
 		<h1>lib/matrix</h1>
 
         <p id="matrix2D"></p>
+        <p id="matrix3D"></p>
+        <p id="matrix4D"></p>
 		<script type="module">
 			import {
                 Core,
@@ -31,12 +33,22 @@
 			const hasDevice = await core.initializeDevice()
 
 			let result = null
+
             const mat2x2 = new Matrix2D()
+            const mat3x3 = new Matrix3D()
+            const mat4x4 = new Matrix4D()
             
-            console.log('matrix 2x2', mat2x2)
             document
                 .getElementById('matrix2D')
                 .textContent = mat2x2.toString()
+
+            document
+                .getElementById('matrix3D')
+                .textContent = mat3x3.toString()
+            
+            document
+                .getElementById('matrix4D')
+                .textContent = mat4x4.toString()
 		</script>
 	</body>
 </html>

@@ -1,69 +1,100 @@
+import {
+    Vector2D,
+    Vector3D,
+    Vector4D,
+    VectorND
+} from './vector.mjs'
 class MatrixND
 {
-    constructor(rows)
+    /**
+     * 
+     * @param {VectorND[]} vectors 
+     */
+    constructor(vectors)
     {
-        this._rows = rows
+        this._vectors = vectors
     }
 
-    get rows()
+    get vectors()
     {
-        if (!this._rows)
-        {
-            this._rows = [[0.0, 0.0], [0.0, 0.0]]
-        }
-        return this._rows
+        return this._vectors
     }
 
     toString()
     {
-        let value = '[' + this.rows.map((r) => '[' + r.join(', ') + ']').join(', ') + ']'
+        let value = '[' + this.vectors.map(
+            (v) => '[' + v.entries.join(', ') + ']'
+        ).join(', ') + ']'
         return value
     }
 }
 
 class Matrix2D extends MatrixND
 {
-    constructor(row1, row2)
+    constructor(vec1, vec2)
     {
-        if (!row1 && !row2)
-        {
-            row1 = [0.0, 0.0]
-            row2 = [0.0, 0.0]
-        }
-        if (!row1 && row2)
-        {
-            row1 = []
-            for (var i = 0; i < row2.length; i++)
-            {
-                row1.push(0.0)
-            }
-        }
+        let dim = 2;
+        let vectors = [vec1, vec2]
 
-        if (row1 && !row2)
+        for (let i = 0; i < vectors.length; i++)
         {
-            row2 = []
-            for (var i = 0; i < row1.length; i++)
+            if (!vectors[i]) vectors[i] = new Vector2D(0.0, 0.0)
+            if (vectors[i].length < dim)
             {
-                row2.push(0.0)
+                for (let j = vectors[i].length; j < dim; j++)
+                {
+                    vectors[i].entries.push(0.0)
+                }
             }
+            if (vectors[i].length != dim) throw `Matrix vector at index ${i} is not R^${dim}.`
         }
-        super([row1, row2])
+        super(vectors)
     }
 }
 
 class Matrix3D extends MatrixND
 {
-    constructor(row1, row2, row3)
+    constructor(vec1, vec2, vec3)
     {
-        super([row1, row2, row3])
+        
+        let dim = 3;
+        let vectors = [vec1, vec2, vec3]
+        for (let i = 0; i < vectors.length; i++)
+        {
+            if (!vectors[i]) vectors[i] = new Vector3D(0.0, 0.0, 0.0)
+            if (vectors[i].length < dim)
+            {
+                for (let j = vectors[i].length; j < dim; j++)
+                {
+                    vectors[i].entries.push(0.0)
+                }
+            }
+            if (vectors[i].length != dim) throw `Matrix vector at index ${i} is not R^${dim}.`
+        }
+        
+        super(vectors)
     }
 }
 
 class Matrix4D extends MatrixND
 {
-    constructor(row1, row2, row3, row4)
+    constructor(vec1, vec2, vec3, vec4)
     {
-        super([row1, row2, row3, row4])
+        let dim = 4;
+        let vectors = [vec1, vec2, vec3, vec4]
+        for (let i = 0; i < vectors.length; i++)
+        {
+            if (!vectors[i]) vectors[i] = new Vector4D(0.0, 0.0, 0.0, 0.0)
+            if (vectors[i].length < dim)
+            {
+                for (let j = vectors[i].length; j < dim; j++)
+                {
+                    vectors[i].entries.push(0.0)
+                }
+            }
+            if (vectors[i].length != dim) throw `Matrix vector at index ${i} is not R^${dim}.`
+        }
+        super(vectors)
     }
 }
 
