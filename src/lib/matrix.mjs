@@ -7,7 +7,8 @@ import {
 class MatrixND
 {
     /**
-     * 
+     * Instantiate Matrix with vector array. 
+     * Vectors are of type VectorND, Vector2D, Vector3D, or Vector4D
      * @param {VectorND[]} vectors 
      */
     constructor(vectors)
