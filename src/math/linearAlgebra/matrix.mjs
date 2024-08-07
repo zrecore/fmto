@@ -1,14 +1,15 @@
-async function matrixAdd(device, mat1, mat2)
-{
-    //
-}
+import { matrixAdd } from "./matrixAdd.mjs"
+import { matrixSubtract } from "./matrixSubtract.mjs"
+import { matrixScale } from "./matrixScale.mjs"
 
-async function matrixSubtract(device, mat1, mat2)
-{
-    //
-}
+import { matrixMultiplyMV, matrixMultiplyVM } from "./matrixMultiply.mjs"
+import { matrixProduct } from "./matrixProduct.mjs"
 
 export {
     matrixAdd,
-    matrixSubtract
+    matrixSubtract,
+    matrixScale,
+    matrixMultiplyMV,
+    matrixMultiplyVM,
+    matrixProduct
 }

@@ -1,3 +1,9 @@
+/**
+ * FMTO - WebGPU accelerated math library.
+ * 
+ * @author Alex Albino <webmaster@alexventure.com>
+ * @version 1.0.0
+ */
 describe('lib/matrix', () => {
     let page
     const timeout = 5000
@@ -30,5 +36,12 @@ describe('lib/matrix', () => {
         let text = await page.evaluate( () => document.getElementById('matrix3D').textContent )
         expect(text).toBe('[[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]')
     })*/
+
+    // Happy path test 3D n x n matrices A and B. A + B
+    it('should add 3x3 matrix A [[1,2,3],[4,5,6],[7,8,9],] to 3x3 matrix B [[10,20,30],[40,50,60],[70,80,90]], resulting in [[11, 22, 33], [44, 55, 66], [77, 88, 99]]', async () => {
+        let text = await page.evaluate( () => document.getElementById('matrix3x3Add').textContent )
+        
+        expect(text).toBe('[[11, 22, 33], [44, 55, 66], [77, 88, 99]]')
+    })
     
 })

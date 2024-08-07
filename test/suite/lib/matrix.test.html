@@ -12,13 +12,17 @@
         <p id="matrix2D"></p>
         <p id="matrix3D"></p>
         <p id="matrix4D"></p>
+        <p id="hasLinearAlgebra"></p>
+        <p id="matrix3x3Add"></p>
 		<script type="module">
 			import {
                 Core,
+                LinearAlgebra,
                 Matrix2D,
                 Matrix3D,
                 Matrix4D,
-                MatrixND
+                MatrixND,
+                Vector3D
             } from '/src/index.mjs'
 
 			const core = new Core()
@@ -26,7 +30,7 @@
 			const hasAdapter = await core.initializeAdapter()
 			const hasDevice = await core.initializeDevice()
 
-			let result = null
+			let resultMatrix = null
 
             const mat2x2 = new Matrix2D()
             const mat3x3 = new Matrix3D()
@@ -43,6 +47,61 @@
             document
                 .getElementById('matrix4D')
                 .textContent = mat4x4.toString()
+
+            if (hasAdapter && hasDevice) {
+				const linearAlgebra = new LinearAlgebra(
+					core.device
+				)
+				if (linearAlgebra)
+				{
+					document.getElementById('hasLinearAlgebra').textContent = true
+				}
+				
+                const mat3x3A = new Matrix3D(
+                    new Vector3D(
+                        1,
+                        2,
+                        3
+                    ),
+                    new Vector3D(
+                        4,
+                        5,
+                        6
+                    ),
+                    new Vector3D(
+                        7,
+                        8,
+                        9
+                    )
+                )
+
+                const mat3x3B = new Matrix3D(
+                    new Vector3D(
+                        10,
+                        20,
+                        30
+                    ),
+                    new Vector3D(
+                        40,
+                        50,
+                        60
+                    ),
+                    new Vector3D(
+                        70,
+                        80,
+                        90
+                    )
+                )
+                
+				resultMatrix = await linearAlgebra.matrixAdd(mat3x3A, mat3x3B)
+                if (resultMatrix)
+                {
+                    document
+                        .getElementById('matrix3x3Add')
+                        .textContent = resultMatrix.toString()
+                }
+			}
+
 		</script>
 	</body>
 </html>

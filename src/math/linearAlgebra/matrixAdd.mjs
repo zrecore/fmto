@@ -1,59 +1,67 @@
-/**
- * FMTO - Linear Algebra library, WebGPU accelerated.
- * 
- * @author Alex Albino <webmaster@alexventure.com>
- * @version 1.0.0
- */
-
-import { Vector3D } from "../../index.mjs"
+import { MatrixND, VectorND } from "../../index.mjs";
 
 /**
  * 
  * @param {GPUDevice} device 
- * @param {Vector3D} e1 
- * @param {Vector3D} e2 
- * @returns 
+ * @param {MatrixND} mat1 
+ * @param {MatrixND} mat2 
+ * @returns {MatrixND}
  */
-async function crossProduct(device, e1, e2)
+async function matrixAdd(device, mat1, mat2)
 {
-    if (e1.length != e2.length) {
-        throw "math/linearAlgebra crossProduct() arguments e1 and e2 must match dimensions."
+    //
+    if (mat1.length != mat2.length) {
+        throw "math/linearAlgebra matrixAdd() arguments mat1 and mat2 must match dimensions (R^2 to R^4)."
     }
-    if (e1.length < 3) {
-        throw "math/linearAlgebra crossProduct() arguments e1 and e2 must be at least 3 dimensional."
+    if (mat1.length < 2) {
+        throw "math/linearAlgebra matrixAdd() arguments mat1 and mat2 must be at least R^2."
     }
-    if (e1.length > 3) {
-        throw "math/linearAlgebra crossProduct() only supports up to 3 dimensions for arguments e1 and e2."
+    if (mat1.length > 4) {
+        throw "math/linearAlgebra matrixAdd() only supports up to R^4 for arguments mat1 and mat2."
     }
 
-    const dimCount = e1.length
-    const e1_entries = e1.entries.join(', ')
-    const e2_entries = e2.entries.join(', ')
+    const dimCount = mat1.length
+    const BUFFER_SIZE = 4 * (mat1.length * mat1.vectors[0].length + dimCount)
+    
+    const mat1_entries = mat1
+        .vectors
+        .map((v) => {
+            let vecSize = v.length
+            let vecEntries = v.entries.join(',')
 
-    const BUFFER_SIZE = 4 * dimCount // x is 4, y is 4, z is 4
+            return `vec${vecSize}f(${vecEntries})`
+        })
+        .join(',')
+    const mat2_entries = mat2
+        .vectors
+        .map((v) => {
+            let vecSize = v.length
+            let vecEntries = v.entries.join(',')
+
+            return `vec${vecSize}f(${vecEntries})`
+        })
+        .join(',')
+
     const shader = `
     @group(0) @binding(0)
-    var <storage, read_write> output: vec${dimCount}f;
+    var <storage, read_write> output: mat${dimCount}x${dimCount}f;
     @compute @workgroup_size(64)
     fn main()
     {
-        var e1 : vec${dimCount}f = vec${dimCount}f(${e1_entries});
-        var e2 : vec${dimCount}f = vec${dimCount}f(${e2_entries});
-        output = cross(e1, e2);
+        var mat1 : mat${dimCount}x${dimCount}f = mat${dimCount}x${dimCount}f(${mat1_entries});
+        var mat2 : mat${dimCount}x${dimCount}f = mat${dimCount}x${dimCount}f(${mat2_entries});
+        output = mat1 + mat2;
     }
     `
     const shaderModule = device.createShaderModule({
         code: shader
     })
-    // Create buffers to handle our data
-    // ... Specified as storage buffer (high speed).
-    // ... Will be the source of a copy operation
+
     const output = device.createBuffer({
         size: BUFFER_SIZE,
         usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC
     })
-    // ... Specified as a buffer that can be mapped for reading by JavaScript
-    // ... Will be the destination of a copy operation
+
     const stagingBuffer = device.createBuffer({
         size: BUFFER_SIZE,
         usage: GPUBufferUsage.MAP_READ | GPUBufferUsage.COPY_DST
@@ -97,19 +105,25 @@ async function crossProduct(device, e1, e2)
         }
     })
 
-    // Run the compute pass
+     // Run the compute pass
 
     // ... Create the GPUCommandEncoder to encode commands
     // ... The commands will be issued to the GPU
     const commandEncoder = device.createCommandEncoder()
     // ... Initiate compute pass
+    device.pushErrorScope('validation')
     const passEncoder = commandEncoder.beginComputePass()
 
     // (continue running a compute pass)
     passEncoder.setPipeline(computePipeline)
     passEncoder.setBindGroup(0, bindGroup)
     passEncoder.dispatchWorkgroups(Math.ceil(BUFFER_SIZE / 64))
-
+    device.popErrorScope().then((error) => {
+        if (error)
+        {
+            throw 'matrixAdd shader error:' + error.message
+        }
+    })
     passEncoder.end()
 
     commandEncoder.copyBufferToBuffer(
@@ -140,10 +154,19 @@ async function crossProduct(device, e1, e2)
 
     stagingBuffer.unmap()
     const result = new Float32Array(data)
+    
+    let vectors = [];
+    for (let i = 0; i < result.length; i += (dimCount + 1))
+    {
+        let entries = result.slice(i, i + dimCount)
+        vectors.push(new VectorND(entries))
+    }
 
-    return result
+    let newMatrix = new MatrixND(vectors);
+    return newMatrix
+
 }
 
 export {
-    crossProduct
+    matrixAdd
 }

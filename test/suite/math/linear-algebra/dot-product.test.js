@@ -1,3 +1,9 @@
+/**
+ * FMTO - WebGPU accelerated math library.
+ * 
+ * @author Alex Albino <webmaster@alexventure.com>
+ * @version 1.0.0
+ */
 describe('math/linear-algebra/dot-product', () => {
     let page
     const timeout = 5000
