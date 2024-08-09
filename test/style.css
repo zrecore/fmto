@@ -17,20 +17,33 @@ body h1 {
     color: var( --header-text-color );
 }
 
-body p { padding: 0.5rem; margin: 0; }
+body p, body > ol li { padding: 0.5rem; margin: 0; }
 
-body p:nth-child(even) {
+
+body p:nth-child(even), body > ol li:nth-child(even) {
     background: linear-gradient(to right, var( --header-text-color ) 0.2rem, transparent 0.2rem)
 }
-body p:nth-child(odd) {
+body p:nth-child(odd), body > ol li:nth-child(odd) {
     background: linear-gradient(to right, var( --header-text-color-alt ) 0.2rem, transparent 0.2rem)
 }
 
-body p:first-of-type {
+body p:first-of-type, body > ol li:first-of-type {
     border: solid 0px transparent;
     border-top-left-radius: 0.2rem;
 }
-body p:last-of-type {
+body p:last-of-type, body > ol li:last-of-type {
     border: solid 0 transparent;
     border-bottom-left-radius: 0.2rem;
+}
+
+body a {
+    color: var(--header-text-color)
+}
+
+body > ol li:nth-child(even) a {
+    color: var(--header-text-color)
+}
+
+body > ol li:nth-child(odd) a {
+    color: var(--header-text-color-alt)
 }
