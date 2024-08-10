@@ -11,7 +11,7 @@ body {
     background-color: var( --body-background-color );
     color: var( --body-text-color )
 }
-canvas { display: block; }
+canvas { display: block; width: 800px; height: auto; border: solid 1px var(--body-text-color) }
 
 body h1 {
     color: var( --header-text-color );

@@ -25,7 +25,7 @@ npm run test-server
 
 This will start the test server at http://localhost:3000
 
-Next, run the tests once, or watch for changes to re-run tests:
+Next, open a new terminal and run the tests once, or watch for changes to re-run tests:
 
 ```
 # Run once
@@ -37,3 +37,5 @@ npm run test
 npm run test-watch
 ```
 ![Screenshot of test-watch command](./test/img/screenshot-run-test-watch-tab-80x30.png)
+
+You can see individual test pages by navigating to the FMTO test suite index at http://localhost:3000/test/

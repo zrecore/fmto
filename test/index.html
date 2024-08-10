@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="icon" href="/test/img/favicon.ico" type="image/x-icon">
+		<title>FMTO - index.test</title>
+		<link rel="stylesheet" type="text/css" href="/test/style.css" />
+	</head>
+	<body>
+		<h1>FMTO - Test Suite</h1>
+		<canvas id="gpuCanvas"></canvas>
+		<ol>
+			<li><a href="/test/suite/core.test.html">/test/suite/core.test.html</a></li>
+			<li><a href="/test/suite/lib/matrix.test.html">/test/suite/lib/matrix.test.html</a></li>
+			<li><a href="/test/suite/lib/vector.test.html">/test/suite/lib/vector.test.html</a></li>
+			<li><a href="/test/suite/math/linear-algebra/cross-product.test.html">/test/suite/math/linear-algebra/cross-product.test.html</a></li>
+			<li><a href="/test/suite/math/linear-algebra/dot-product.test.html">/test/suite/math/linear-algebra/dot-product.test.html</a></li>
+		</ol>
+		<script type="module">
+			import {
+				Core,
+				BreadthFirst,
+				DepthFirst,
+
+				LinearAlgebra,
+				Calculus,
+				DifferentialEquations
+			} from '/src/index.mjs'
+
+			try {
+				const core = new Core()
+				
+				const hasAdapter = await core.initializeAdapter()
+				const hasDevice = await core.initializeDevice()
+
+				if (hasAdapter && hasDevice)
+				{
+					const device = core.device
+					// Attempt to use canvas element #gpuCanvas
+					// See example at https://dev.to/ndesmic/basic-webgpu-rendering-2kob
+					const canvas = document.getElementById('gpuCanvas')
+					const context = canvas.getContext('webgpu')
+					context.configure({
+						device,
+						format: 'bgra8unorm'
+					})
+					// Set up vertex buffer
+					const vertices = new Float32Array([
+						-1.0, -1.0, 0, 1, 0, 0, 1,
+						1.0, -1.0, 0, 0, 1, 0, 1,
+						1.0, 1.0, 0, 0, 1, 1, 1,
+						-1.0, 1.0, 0, 0, 0, 1, 1
+					])
+
+					const vertexBuffer = device.createBuffer({
+						size: vertices.byteLength,
+						usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
+						mappedAtCreation: true
+					})
+
+					new Float32Array(
+						vertexBuffer.getMappedRange()
+					)
+					.set(vertices)
+
+					// ...relinquish access to the GPU
+					vertexBuffer.unmap()
+
+					// Create the shader module
+					const shader = `
+						struct VertexOut {
+							@builtin(position) position: vec4<f32>,
+							@location(0) color: vec4<f32>
+						};
+
+						@vertex
+						fn vertex_main( @location(0) position: vec4<f32>,
+										@location(1) color: vec4<f32>) -> VertexOut
+						{
+							var output : VertexOut;
+							output.position = position;
+							output.color = color;
+
+							return output;
+						}
+
+						@fragment
+						fn fragment_main(fragData: VertexOut) -> @location(0) vec4<f32>
+						{
+							return fragData.color;
+						}
+					`
+					const shaderModule = device.createShaderModule({
+						code: shader
+					})
+
+					// Vertex buffer descriptor
+					const vertexBufferDescriptor = [{
+						attributes: [
+							{
+								shaderLocation: 0,
+								offset: 0,
+								format: "float32x3"
+							},
+							{
+								shaderLocation: 1,
+								offset: 12,
+								format: "float32x4"
+							}
+						],
+						arrayStride: 28,
+						stepMode: "vertex"
+					}]
+
+					// Render pipeline
+					const pipelineDescriptor = {
+						vertex: {
+							module: shaderModule,
+							entryPoint: "vertex_main",
+							buffers: vertexBufferDescriptor
+						},
+						fragment: {
+							module: shaderModule,
+							entryPoint: "fragment_main",
+							targets: [
+								{
+									format: "bgra8unorm"
+								}
+							]
+						},
+						primitive: {
+							topology: "triangle-list"
+						},
+						layout: "auto"
+					}
+
+					const renderPipeline = device.createRenderPipeline(
+						pipelineDescriptor
+					)
+
+					// Command encoder
+					const commandEncoder = device.createCommandEncoder()
+					// ... create the pass encoder
+					const clearColor = {
+						r: 0.2,
+						g: 0.2,
+						b: 0.2,
+						a: 1.0
+					}
+					const renderPassDescriptor = {
+						colorAttachments: [
+							{
+								loadValue: clearColor,
+								loadOp: "clear",
+								storeOp: "store", // tell the GPU to write the results to the view
+								view: context
+									.getCurrentTexture()
+									.createView()
+							}
+						]
+					}
+
+					const passEncoder = commandEncoder.beginRenderPass(
+						renderPassDescriptor
+					)
+
+					// Submit the draw operations
+					passEncoder.setPipeline(renderPipeline)
+					passEncoder.setVertexBuffer(0, vertexBuffer)
+					passEncoder.draw(4)
+					passEncoder.end()
+
+					// ...Submit
+					device
+						.queue
+						.submit([
+							commandEncoder.finish()
+						])
+				} else {
+					throw "Could not initialize WebGPU adapter or WebGPU device."
+				}
+			} catch (ex)
+			{
+				console.error(ex)
+			}
+
+		</script>
+	</body>
+</html>
