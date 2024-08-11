@@ -26,16 +26,16 @@ describe('lib/matrix', () => {
     })
 
     // Happy path test 3D n x n - Instantiate default matrix 3D n x n
-    /*it('should represent a matrix, default to 3D [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]', async () => {
+    it('should represent a matrix, default to 3D [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]', async () => {
         let text = await page.evaluate( () => document.getElementById('matrix3D').textContent )
         expect(text).toBe('[[0, 0, 0], [0, 0, 0], [0, 0, 0]]')
     })
 
     // Happy path test 4D n x n - Instantiate default matrix 3D n x n
-    it('should represent a matrix, default to 4D [[0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 0.0]]', async () => {
-        let text = await page.evaluate( () => document.getElementById('matrix3D').textContent )
+    it('should represent a matrix, default to 4D [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]', async () => {
+        let text = await page.evaluate( () => document.getElementById('matrix4D').textContent )
         expect(text).toBe('[[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]')
-    })*/
+    })
 
     // Happy path test 3D n x n matrices A and B. A + B
     it('should add 3x3 matrix A [[1,2,3],[4,5,6],[7,8,9]] to 3x3 matrix B [[10,20,30],[40,50,60],[70,80,90]], resulting in [[11, 22, 33], [44, 55, 66], [77, 88, 99]]', async () => {
