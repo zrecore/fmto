@@ -14,16 +14,29 @@ async function matrixMultiplyMV(device, mat1, v1)
 /**
  * 
  * @param {GPUDevice} device 
- * @param {VectorND} v1 
  * @param {MatrixND} mat1 
+ * @param {number} s1 
  * @returns {MatrixND}
  */
-async function matrixMultiplyVM(device, v1, mat1)
+async function matrixMultiplyMS(device, mat1, s1)
+{
+    //
+}
+
+/**
+ * 
+ * @param {GPUDevice} device 
+ * @param {MatrixND} mat1 
+ * @param {MatrixND} mat2 
+ * @returns {MatrixND}
+ */
+async function matrixMultiplyMM(device, v1, mat1)
 {
     //
 }
 
 export {
     matrixMultiplyMV,
-    matrixMultiplyVM
+    matrixMultiplyMS,
+    matrixMultiplyMM
 }

@@ -15,6 +15,7 @@
         <p id="matrix4D"></p>
         <p id="hasLinearAlgebra"></p>
         <p id="matrix3x3Add"></p>
+        <p id="matrix4x4Add"></p>
 		<script type="module">
 			import {
                 Core,
@@ -23,15 +24,14 @@
                 Matrix3D,
                 Matrix4D,
                 MatrixND,
-                Vector3D
+                Vector3D,
+                Vector4D
             } from '/src/index.mjs'
 
 			const core = new Core()
 			
 			const hasAdapter = await core.initializeAdapter()
 			const hasDevice = await core.initializeDevice()
-
-			let resultMatrix = null
 
             const mat2x2 = new Matrix2D()
             const mat3x3 = new Matrix3D()
@@ -94,12 +94,76 @@
                     )
                 )
                 
-				resultMatrix = await linearAlgebra.matrixAdd(mat3x3A, mat3x3B)
-                if (resultMatrix)
+				const resultMatrix3x3 = await linearAlgebra.matrixAdd(mat3x3A, mat3x3B)
+                
+                if (resultMatrix3x3)
                 {
                     document
                         .getElementById('matrix3x3Add')
-                        .textContent = resultMatrix.toString()
+                        .textContent = resultMatrix3x3.toString()
+                }
+
+
+                const mat4x4A = new Matrix4D(
+                    new Vector4D(
+                        1,
+                        2,
+                        3,
+                        4
+                    ),
+                    new Vector4D(
+                        5,
+                        6,
+                        7,
+                        8
+                    ),
+                    new Vector4D(
+                        9,
+                        10,
+                        11,
+                        12
+                    ),
+                    new Vector4D(
+                        13,
+                        14,
+                        15,
+                        16
+                    )
+                )
+
+                const mat4x4B = new Matrix4D(
+                    new Vector4D(
+                        10,
+                        20,
+                        30,
+                        40
+                    ),
+                    new Vector4D(
+                        50,
+                        60,
+                        70,
+                        80
+                    ),
+                    new Vector4D(
+                        90,
+                        100,
+                        110,
+                        120
+                    ),
+                    new Vector4D(
+                        130,
+                        140,
+                        150,
+                        160
+                    )
+                )
+
+                const resultMatrix4x4 = await linearAlgebra.matrixAdd(mat4x4A, mat4x4B)
+                if (resultMatrix4x4)
+                {
+                    document
+                        .getElementById('matrix4x4Add')
+                        .textContent = resultMatrix4x4.toString()
                 }
 			}
 

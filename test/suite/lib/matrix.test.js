@@ -38,10 +38,15 @@ describe('lib/matrix', () => {
     })*/
 
     // Happy path test 3D n x n matrices A and B. A + B
-    it('should add 3x3 matrix A [[1,2,3],[4,5,6],[7,8,9],] to 3x3 matrix B [[10,20,30],[40,50,60],[70,80,90]], resulting in [[11, 22, 33], [44, 55, 66], [77, 88, 99]]', async () => {
+    it('should add 3x3 matrix A [[1,2,3],[4,5,6],[7,8,9]] to 3x3 matrix B [[10,20,30],[40,50,60],[70,80,90]], resulting in [[11, 22, 33], [44, 55, 66], [77, 88, 99]]', async () => {
         let text = await page.evaluate( () => document.getElementById('matrix3x3Add').textContent )
         
         expect(text).toBe('[[11, 22, 33], [44, 55, 66], [77, 88, 99]]')
     })
     
+    it('should add 4x4 matrix A [[1,2,3,4],[5,6,7,8],[9,10,11,12],[13,14,15,16]] to 4x4 matrix B [[10,20,30,40],[50,60,70,80],[90,100,110,120],[130,140,150,160]], resulting in [[11, 22, 33, 44], [55, 66, 77, 88], [99, 110, 121, 132], [143, 154, 165, 176]]', async () => {
+        let text = await page.evaluate( () => document.getElementById('matrix4x4Add').textContent )
+        
+        expect(text).toBe('[[11, 22, 33, 44], [55, 66, 77, 88], [99, 110, 121, 132], [143, 154, 165, 176]]')
+    })
 })

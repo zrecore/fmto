@@ -19,9 +19,9 @@ async function matrixAdd(device, mat1, mat2)
     if (mat1.length > 4) {
         throw "math/linearAlgebra matrixAdd() only supports up to R^4 for arguments mat1 and mat2."
     }
-
+    const maxDimensions = 4
     const dimCount = mat1.length
-    const BUFFER_SIZE = 4 * (mat1.length * mat1.vectors[0].length + dimCount)
+    const BUFFER_SIZE = 4 * (dimCount * dimCount + dimCount)
     
     const mat1_entries = mat1
         .vectors
@@ -44,17 +44,26 @@ async function matrixAdd(device, mat1, mat2)
 
     const shader = `
     @group(0) @binding(0)
-    var <storage, read_write> output: mat${dimCount}x${dimCount}f;
+    var <storage, read_write> output: mat${dimCount}x${dimCount}<f32>;
     @compute @workgroup_size(64)
     fn main()
     {
-        var mat1 : mat${dimCount}x${dimCount}f = mat${dimCount}x${dimCount}f(${mat1_entries});
-        var mat2 : mat${dimCount}x${dimCount}f = mat${dimCount}x${dimCount}f(${mat2_entries});
-        output = mat1 + mat2;
+        var mat1 : mat${dimCount}x${dimCount}<f32> = mat${dimCount}x${dimCount}<f32>(${mat1_entries});
+        var mat2 : mat${dimCount}x${dimCount}<f32> = mat${dimCount}x${dimCount}<f32>(${mat2_entries});
+        var matResult : mat${dimCount}x${dimCount}f = mat1 + mat2;
+        output = matResult;
     }
     `
+    device.pushErrorScope('validation')
     const shaderModule = device.createShaderModule({
         code: shader
+    })
+
+    device.popErrorScope().then((error) => {
+        if (error)
+        {
+            throw '/src/math/linearAlgebra/matrixAdd.mjs shader error:' + error.message
+        }
     })
 
     const output = device.createBuffer({
@@ -118,13 +127,15 @@ async function matrixAdd(device, mat1, mat2)
     passEncoder.setPipeline(computePipeline)
     passEncoder.setBindGroup(0, bindGroup)
     passEncoder.dispatchWorkgroups(Math.ceil(BUFFER_SIZE / 64))
+
+    passEncoder.end()
+
     device.popErrorScope().then((error) => {
         if (error)
         {
-            throw 'matrixAdd shader error:' + error.message
+            throw '/src/math/linearAlgebra/matrixAdd.mjs shader error:' + error.message
         }
     })
-    passEncoder.end()
 
     commandEncoder.copyBufferToBuffer(
         output,
@@ -151,15 +162,17 @@ async function matrixAdd(device, mat1, mat2)
 
     const copyArrayBuffer = stagingBuffer.getMappedRange(0, BUFFER_SIZE)
     const data = copyArrayBuffer.slice()
-
+    
     stagingBuffer.unmap()
     const result = new Float32Array(data)
-    
+    console.log('result', result)
     let vectors = [];
-    for (let i = 0; i < result.length; i += (dimCount + 1))
+
+    // dimCount * dimCount should never be < result.length
+    for (let i = 0; i < (dimCount * dimCount); i += (dimCount + (maxDimensions - dimCount)))
     {
         let entries = result.slice(i, i + dimCount)
-        vectors.push(new VectorND(entries))
+        vectors.push(new VectorND(entries)) 
     }
 
     let newMatrix = new MatrixND(vectors);

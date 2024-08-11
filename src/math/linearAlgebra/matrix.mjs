@@ -2,7 +2,7 @@ import { matrixAdd } from "./matrixAdd.mjs"
 import { matrixSubtract } from "./matrixSubtract.mjs"
 import { matrixScale } from "./matrixScale.mjs"
 
-import { matrixMultiplyMV, matrixMultiplyVM } from "./matrixMultiply.mjs"
+import { matrixMultiplyMV, matrixMultiplyMS, matrixMultiplyMM } from "./matrixMultiply.mjs"
 import { matrixProduct } from "./matrixProduct.mjs"
 
 export {
@@ -10,6 +10,7 @@ export {
     matrixSubtract,
     matrixScale,
     matrixMultiplyMV,
-    matrixMultiplyVM,
+    matrixMultiplyMS,
+    matrixMultiplyMM,
     matrixProduct
 }

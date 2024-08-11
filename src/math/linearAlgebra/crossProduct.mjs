@@ -103,6 +103,7 @@ async function crossProduct(device, e1, e2)
     // ... The commands will be issued to the GPU
     const commandEncoder = device.createCommandEncoder()
     // ... Initiate compute pass
+    device.pushErrorScope('validation')
     const passEncoder = commandEncoder.beginComputePass()
 
     // (continue running a compute pass)
@@ -111,6 +112,13 @@ async function crossProduct(device, e1, e2)
     passEncoder.dispatchWorkgroups(Math.ceil(BUFFER_SIZE / 64))
 
     passEncoder.end()
+
+    device.popErrorScope().then((error) => {
+        if (error)
+        {
+            throw 'src/math/linearAlgebra/crossProduct.mjs shader error:' + error.message
+        }
+    })
 
     commandEncoder.copyBufferToBuffer(
         output,

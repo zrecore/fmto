@@ -9,7 +9,8 @@ import { crossProduct } from './crossProduct.mjs'
 import {
     matrixAdd,
     matrixMultiplyMV,
-    matrixMultiplyVM,
+    matrixMultiplyMS,
+    matrixMultiplyMM,
     matrixProduct,
     matrixScale,
     matrixSubtract
@@ -78,7 +79,8 @@ export {
     crossProduct,
     matrixAdd,
     matrixMultiplyMV,
-    matrixMultiplyVM,
+    matrixMultiplyMS,
+    matrixMultiplyMM,
     matrixProduct,
     matrixScale,
     matrixSubtract
