@@ -39,6 +39,9 @@
 					const device = core.device
 					// Attempt to use canvas element #gpuCanvas
 					// See example at https://dev.to/ndesmic/basic-webgpu-rendering-2kob
+					// Somewhat out of date, but I was able to update to 
+					// current syntax as of this writing
+					// (August 2024)
 					const canvas = document.getElementById('gpuCanvas')
 					const context = canvas.getContext('webgpu')
 					context.configure({
@@ -47,10 +50,11 @@
 					})
 					// Set up vertex buffer
 					const vertices = new Float32Array([
-						-1.0, -1.0, 0, 1, 0, 0, 1,
-						1.0, -1.0, 0, 0, 1, 0, 1,
-						1.0, 1.0, 0, 0, 1, 1, 1,
-						-1.0, 1.0, 0, 0, 0, 1, 1
+						// point x, point y, point z, 	color r, color g, color b, color a
+						-1.0, -1.0, 0, 		1, 0, 0, 1,
+						1.0, -1.0, 0, 		0, 1, 0, 1,
+						1.0, 1.0, 0, 		0, 1, 1, 1,
+						-1.0, 1.0, 0, 		0, 0, 1, 1
 					])
 
 					const vertexBuffer = device.createBuffer({
