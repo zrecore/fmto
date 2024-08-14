@@ -1,5 +1,12 @@
 class DefaultProcessing
 {
+    /**
+     * Constructor. Setup a default compute processing pipeline.
+     * @param {GPUDevice} device The WebGPU device.
+     * @param {number} buffer_size The buffer size to allocate. Note, must be at least 48 bytes.
+     * @param {string} shader The WGSL (WebGPU Shading Language) markup to run.
+     * @param {string} entry_point Default to "main" as the entry point function name.
+     */
     constructor(device, buffer_size, shader, entry_point = "main")
     {
         this._device = device
@@ -10,22 +17,37 @@ class DefaultProcessing
         // Reset stuff
         this.teardown()
     }
+    /**
+     * @type {GPUDevice}
+     */
     get device()
     {
         return this._device
     }
+    /**
+     * @type {number}
+     */
     get bufferSize()
     {
         return this._buffer_size
     }
+    /**
+     * @type {string}
+     */
     get entryPoint()
     {
         return this._entry_point
     }
+    /**
+     * @type {string}
+     */
     get shader()
     {
         return this._shader
     }
+    /**
+     * @type {GPUBuffer}
+     */
     get outputBuffer()
     {
         if (!this._outputBuffer)
@@ -38,6 +60,9 @@ class DefaultProcessing
         }
         return this._outputBuffer
     }
+    /**
+     * @type {GPUBuffer}
+     */
     get stagingBuffer()
     {
         if (!this._stagingBuffer)
@@ -50,6 +75,9 @@ class DefaultProcessing
         }
         return this._stagingBuffer
     }
+    /**
+     * @type {GPUBindGroupLayout}
+     */
     get bindGroupLayout()
     {
         if (!this._bindGroupLayout)
@@ -66,6 +94,9 @@ class DefaultProcessing
     {
         this._bindGroupLayout = value
     }
+    /**
+     * @type {GPUBindGroup}
+     */
     get bindGroup()
     {
         if (!this._bindGroup)
@@ -80,6 +111,9 @@ class DefaultProcessing
     {
         this._bindGroup = value
     }
+    /**
+     * @type {GPUPipelineLayout}
+     */
     get pipelineLayout()
     {
         if (!this._pipelineLayout)
@@ -94,6 +128,9 @@ class DefaultProcessing
         }
         return this._pipelineLayout
     }
+    /**
+     * @type {GPUComputePipeline}
+     */
     get computePipeline()
     {
         if (!this._computePipeline)
@@ -103,7 +140,7 @@ class DefaultProcessing
                 .pushErrorScope('validation')
 
             const computePipelineConfig = this.createComputePipeline()
-            
+
             this._computePipeline = this
                 .device
                 .createComputePipeline(
@@ -121,6 +158,9 @@ class DefaultProcessing
         }
         return this._computePipeline
     }
+    /**
+     * @type {GPUCommandEncoder}
+     */
     get commandEncoder()
     {
         if (!this._commandEncoder)
@@ -131,6 +171,9 @@ class DefaultProcessing
         }
         return this._commandEncoder
     }
+    /**
+     * @type {GPUComputePassEncoder}
+     */
     get passEncoder()
     {
         if (!this._passEncoder)
@@ -155,10 +198,16 @@ class DefaultProcessing
         }
         return this._passEncoder
     }
+    /**
+     * @type {string}
+     */
     get shader()
     {
         return this._shader
     }
+    /**
+     * @type {GPUShaderModule}
+     */
     get shaderModule()
     {
         if (!this._shaderModule)
@@ -190,7 +239,10 @@ class DefaultProcessing
                 }
             })
     }
-
+    /**
+     * Run the shader module in the compute processing pipeline
+     * @returns {Float32Array}
+     */
     async run()
     {
         this.setupShaderModule()
