@@ -9,6 +9,9 @@
 // Core
 import Core from './core/index.mjs'
 
+// Defaults
+import { DefaultProcessing } from './default/default-processing.mjs'
+
 // Lib
 import { Vector2D, Vector3D, Vector4D, VectorND } from './lib/vector.mjs'
 import { Matrix2D, Matrix3D, Matrix4D, MatrixND } from './lib/matrix.mjs'
@@ -26,6 +29,7 @@ import {DifferentialEquations} from './math/differentialEquations/index.mjs'
 
 export {
     Core,
+    DefaultProcessing,
 
     Vector2D,
     Vector3D,
