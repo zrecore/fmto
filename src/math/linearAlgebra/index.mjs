@@ -71,6 +71,15 @@ class LinearAlgebra
             mat2
         )
     }
+
+    async matrixSubtract(mat1, mat2)
+    {
+        return await matrixSubtract(
+            this.device,
+            mat1,
+            mat2
+        )
+    }
 }
 
 export {

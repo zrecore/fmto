@@ -16,6 +16,8 @@
         <p id="hasLinearAlgebra"></p>
         <p id="matrix3x3Add"></p>
         <p id="matrix4x4Add"></p>
+        <p id="matrix3x3Subtract"></p>
+        <p id="matrix4x4Subtract"></p>
 		<script type="module">
 			import {
                 Core,
@@ -103,6 +105,14 @@
                         .textContent = resultMatrix3x3.toString()
                 }
 
+                const resultMatrix3x3Subtract = await linearAlgebra.matrixSubtract(mat3x3A, mat3x3B)
+                if (resultMatrix3x3Subtract)
+                {
+                    document
+                        .getElementById('matrix3x3Subtract')
+                        .textContent = resultMatrix3x3Subtract.toString()
+                }
+
 
                 const mat4x4A = new Matrix4D(
                     new Vector4D(
@@ -164,6 +174,14 @@
                     document
                         .getElementById('matrix4x4Add')
                         .textContent = resultMatrix4x4.toString()
+                }
+
+                const resultMatrix4x4Subtract = await linearAlgebra.matrixSubtract(mat4x4A, mat4x4B)
+                if (resultMatrix4x4Subtract)
+                {
+                    document
+                        .getElementById('matrix4x4Subtract')
+                        .textContent = resultMatrix4x4Subtract.toString()
                 }
 			}
 
