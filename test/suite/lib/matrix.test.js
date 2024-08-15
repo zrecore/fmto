@@ -63,5 +63,18 @@ describe('lib/matrix', () => {
         expect(text).toBe('[[-9, -18, -27, -36], [-45, -54, -63, -72], [-81, -90, -99, -108], [-117, -126, -135, -144]]')
     })
 
+    // Happy path test 3D n x n matrices A and B. A * 2
+    it('should scale 3x3 matrix A [[1,2,3],[4,5,6],[7,8,9]] by scalar 2, resulting in [[2, 4, 6], [8, 10, 12], [14, 16, 18]]', async () => {
+        let text = await page.evaluate( () => document.getElementById('matrix3x3Scale').textContent )
+        
+        expect(text).toBe('[[2, 4, 6], [8, 10, 12], [14, 16, 18]]')
+    })
+    // Happy path test 4D n x n matrices A and B. A * 2
+    it('should scale 4x4 matrix A [[1,2,3,4],[5,6,7,8],[9,10,11,12],[13,14,15,16]] by scalar 2, resulting in [[2, 4, 6, 8], [10, 12, 14, 16], [18, 20, 22, 24], [26, 28, 30, 32]]', async () => {
+        let text = await page.evaluate( () => document.getElementById('matrix4x4Scale').textContent )
+        
+        expect(text).toBe('[[2, 4, 6, 8], [10, 12, 14, 16], [18, 20, 22, 24], [26, 28, 30, 32]]')
+    })
+
     
 })

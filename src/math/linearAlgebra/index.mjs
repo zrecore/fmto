@@ -80,6 +80,15 @@ class LinearAlgebra
             mat2
         )
     }
+
+    async matrixScale(mat1, scaler1)
+    {
+        return await matrixScale(
+            this.device,
+            mat1,
+            scaler1
+        )
+    }
 }
 
 export {

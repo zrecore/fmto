@@ -18,6 +18,8 @@
         <p id="matrix4x4Add"></p>
         <p id="matrix3x3Subtract"></p>
         <p id="matrix4x4Subtract"></p>
+        <p id="matrix3x3Scale"></p>
+        <p id="matrix4x4Scale"></p>
 		<script type="module">
 			import {
                 Core,
@@ -182,6 +184,22 @@
                     document
                         .getElementById('matrix4x4Subtract')
                         .textContent = resultMatrix4x4Subtract.toString()
+                }
+
+                const resultMatrix3x3Scale = await linearAlgebra.matrixScale(mat3x3A, 2.0)
+                if (resultMatrix3x3Scale)
+                {
+                    document
+                        .getElementById('matrix3x3Scale')
+                        .textContent = resultMatrix3x3Scale.toString()
+                }
+
+                const resultMatrix4x4Scale = await linearAlgebra.matrixScale(mat4x4A, 2.0)
+                if (resultMatrix4x4Scale)
+                {
+                    document
+                        .getElementById('matrix4x4Scale')
+                        .textContent = resultMatrix4x4Scale.toString()
                 }
 			}
 
