@@ -9,8 +9,7 @@ import { crossProduct } from './crossProduct.mjs'
 import {
     matrixAdd,
     matrixMultiplyMV,
-    matrixMultiplyMS,
-    matrixMultiplyMM,
+    matrixMultiplyVM,
     matrixProduct,
     matrixScale,
     matrixSubtract
@@ -98,6 +97,24 @@ class LinearAlgebra
             mat2
         )
     }
+
+    async matrixMultiplyMV(mat1, vec1)
+    {
+        return await matrixMultiplyMV(
+            this.device,
+            mat1,
+            vec1
+        )
+    }
+
+    async matrixMultiplyVM(vec1, mat1)
+    {
+        return await matrixMultiplyVM(
+            this.device,
+            vec1,
+            mat1
+        )
+    }
 }
 
 export {
@@ -106,8 +123,7 @@ export {
     crossProduct,
     matrixAdd,
     matrixMultiplyMV,
-    matrixMultiplyMS,
-    matrixMultiplyMM,
+    matrixMultiplyVM,
     matrixProduct,
     matrixScale,
     matrixSubtract
