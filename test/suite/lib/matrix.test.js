@@ -63,18 +63,29 @@ describe('lib/matrix', () => {
         expect(text).toBe('[[-9, -18, -27, -36], [-45, -54, -63, -72], [-81, -90, -99, -108], [-117, -126, -135, -144]]')
     })
 
-    // Happy path test 3D n x n matrices A and B. A * 2
+    // Happy path test 3D n x n matrix A and scalar 2. A * 2
     it('should scale 3x3 matrix A [[1,2,3],[4,5,6],[7,8,9]] by scalar 2, resulting in [[2, 4, 6], [8, 10, 12], [14, 16, 18]]', async () => {
         let text = await page.evaluate( () => document.getElementById('matrix3x3Scale').textContent )
         
         expect(text).toBe('[[2, 4, 6], [8, 10, 12], [14, 16, 18]]')
     })
-    // Happy path test 4D n x n matrices A and B. A * 2
+    // Happy path test 4D n x n matrix A and scalar 2. A * 2
     it('should scale 4x4 matrix A [[1,2,3,4],[5,6,7,8],[9,10,11,12],[13,14,15,16]] by scalar 2, resulting in [[2, 4, 6, 8], [10, 12, 14, 16], [18, 20, 22, 24], [26, 28, 30, 32]]', async () => {
         let text = await page.evaluate( () => document.getElementById('matrix4x4Scale').textContent )
         
         expect(text).toBe('[[2, 4, 6, 8], [10, 12, 14, 16], [18, 20, 22, 24], [26, 28, 30, 32]]')
     })
 
-    
+    // Happy path test 3D n x n matrices A and B. A * B
+    it('should scale 3x3 matrix A [[1,2,3],[4,5,6],[7,8,9]] by 3x3 matrix B [[10,20,30],[40,50,60],[70,80,90]], resulting in [[300, 360, 420], [660, 810, 960], [1020, 1260, 1500]]', async () => {
+        let text = await page.evaluate( () => document.getElementById('matrix3x3Product').textContent )
+        
+        expect(text).toBe('[[300, 360, 420], [660, 810, 960], [1020, 1260, 1500]]')
+    })
+    // Happy path test 4D n x n matrices A and B. A * B
+    it('should scale 4x4 matrix A [[1,2,3,4],[5,6,7,8],[9,10,11,12],[13,14,15,16]] by 4x4 matrix B [[10,20,30,40],[50,60,70,80],[90,100,110,120],[130,140,150,160]], resulting in [[900, 1000, 1100, 1200], [2020, 2280, 2540, 2800], [3140, 3560, 3980, 4400], [4260, 4840, 5420, 6000]]', async () => {
+        let text = await page.evaluate( () => document.getElementById('matrix4x4Product').textContent )
+        
+        expect(text).toBe('[[900, 1000, 1100, 1200], [2020, 2280, 2540, 2800], [3140, 3560, 3980, 4400], [4260, 4840, 5420, 6000]]')
+    })
 })

@@ -89,6 +89,15 @@ class LinearAlgebra
             scaler1
         )
     }
+
+    async matrixProduct(mat1, mat2)
+    {
+        return await matrixProduct(
+            this.device,
+            mat1,
+            mat2
+        )
+    }
 }
 
 export {

@@ -20,6 +20,8 @@
         <p id="matrix4x4Subtract"></p>
         <p id="matrix3x3Scale"></p>
         <p id="matrix4x4Scale"></p>
+        <p id="matrix3x3Product"></p>
+        <p id="matrix4x4Product"></p>
 		<script type="module">
 			import {
                 Core,
@@ -200,6 +202,22 @@
                     document
                         .getElementById('matrix4x4Scale')
                         .textContent = resultMatrix4x4Scale.toString()
+                }
+
+                const resultMatrix3x3Product = await linearAlgebra.matrixProduct(mat3x3A, mat3x3B)
+                if (resultMatrix3x3Product)
+                {
+                    document
+                        .getElementById('matrix3x3Product')
+                        .textContent = resultMatrix3x3Product.toString()
+                }
+
+                const resultMatrix4x4Product = await linearAlgebra.matrixProduct(mat4x4A, mat4x4B)
+                if (resultMatrix4x4Product)
+                {
+                    document
+                        .getElementById('matrix4x4Product')
+                        .textContent = resultMatrix4x4Product.toString()
                 }
 			}
 
