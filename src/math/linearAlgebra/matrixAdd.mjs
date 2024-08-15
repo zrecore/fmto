@@ -1,7 +1,6 @@
 import { MatrixND, VectorND, DefaultProcessing} from "../../index.mjs";
-
 /**
- * 
+ * Matrix Add.
  * @param {GPUDevice} device 
  * @param {MatrixND} mat1 
  * @param {MatrixND} mat2 

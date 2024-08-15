@@ -1,5 +1,4 @@
 import { MatrixND, VectorND } from "../../index.mjs";
-
 /**
  * 
  * @param {GPUDevice} device 
