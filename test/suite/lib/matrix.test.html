@@ -24,6 +24,8 @@
         <p id="matrix4x4Product"></p>
         <p id="matrix3x3MultiplyMV"></p>
         <p id="matrix4x4MultiplyMV"></p>
+        <p id="matrix3x3MultiplyVM"></p>
+        <p id="matrix4x4MultiplyVM"></p>
 		<script type="module">
 			import {
                 Core,
@@ -238,6 +240,22 @@
                     document
                         .getElementById('matrix4x4MultiplyMV')
                         .textContent = resultMatrix4x4MultiplyMV.toString()
+                }
+
+                const resultMatrix3x3MultiplyVM = await linearAlgebra.matrixMultiplyVM(vector3, mat3x3A)
+                if (resultMatrix3x3MultiplyVM)
+                {
+                    document
+                        .getElementById('matrix3x3MultiplyVM')
+                        .textContent = resultMatrix3x3MultiplyVM.toString()
+                }
+
+                const resultMatrix4x4MultiplyVM = await linearAlgebra.matrixMultiplyVM(vector4, mat4x4A)
+                if (resultMatrix4x4MultiplyVM)
+                {
+                    document
+                        .getElementById('matrix4x4MultiplyVM')
+                        .textContent = resultMatrix4x4MultiplyVM.toString()
                 }
 			}
 

@@ -88,4 +88,30 @@ describe('lib/matrix', () => {
         
         expect(text).toBe('[[900, 1000, 1100, 1200], [2020, 2280, 2540, 2800], [3140, 3560, 3980, 4400], [4260, 4840, 5420, 6000]]')
     })
+
+    // Happy path test 3D n x n matrices A and vector3. A * vector3
+    it('should multiply 3x3 matrix A [[1,2,3],[4,5,6],[7,8,9]] with 3D vector [1,2,4], resulting in 3D vector [37, 44, 51]', async () => {
+        let text = await page.evaluate( () => document.getElementById('matrix3x3MultiplyMV').textContent )
+        
+        expect(text).toBe('[37, 44, 51]')
+    })
+    // Happy path test 4D n x n matrices A and B. A * vector4
+    it('should multiply 4x4 matrix A [[1,2,3,4],[5,6,7,8],[9,10,11,12],[13,14,15,16]] with 4D vector[1,2,4,8], resulting in 4D vector [151, 166, 181, 196]', async () => {
+        let text = await page.evaluate( () => document.getElementById('matrix4x4MultiplyMV').textContent )
+        
+        expect(text).toBe('[151, 166, 181, 196]')
+    })
+
+    // Happy path test 3D n x n matrices A and vector3. vector3 * A
+    it('should multiply 3D vector [1,2,4] with 3x3 matrix A [[1,2,3],[4,5,6],[7,8,9]], resulting in 3D vector [17, 38, 59]', async () => {
+        let text = await page.evaluate( () => document.getElementById('matrix3x3MultiplyVM').textContent )
+        
+        expect(text).toBe('[17, 38, 59]')
+    })
+    // Happy path test 4D n x n matrices A and B. vector4 * A
+    it('should multiply 4D vector[1,2,4,8] with 4x4 matrix A [[1,2,3,4],[5,6,7,8],[9,10,11,12],[13,14,15,16]], resulting in 4D vector [49, 109, 169, 229]', async () => {
+        let text = await page.evaluate( () => document.getElementById('matrix4x4MultiplyVM').textContent )
+        
+        expect(text).toBe('[49, 109, 169, 229]')
+    })
 })
