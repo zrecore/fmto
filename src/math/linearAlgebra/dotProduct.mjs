@@ -5,7 +5,7 @@
  * @version 1.0.0
  */
 
-import { DefaultProcessing, Vector2D, Vector3D, Vector4D } from "../../index.mjs"
+import { DefaultCompute, Vector2D, Vector3D, Vector4D } from "../../index.mjs"
 
 /**
  * Return the dot product of two vectors.
@@ -46,7 +46,7 @@ async function dotProduct(device, e1, e2)
         output = dot(e1, e2);
     }
     `
-    const processing = new DefaultProcessing(
+    const processing = new DefaultCompute(
         device,
         BUFFER_SIZE,
         shader

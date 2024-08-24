@@ -5,7 +5,7 @@
  * @version 1.0.0
  */
 
-import { Vector3D, DefaultProcessing } from "../../index.mjs"
+import { Vector3D, DefaultCompute } from "../../index.mjs"
 
 /**
  * 
@@ -43,7 +43,7 @@ async function crossProduct(device, e1, e2)
     }
     `
 
-    const processing = new DefaultProcessing(
+    const processing = new DefaultCompute(
         device,
         BUFFER_SIZE,
         shader

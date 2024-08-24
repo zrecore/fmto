@@ -1,4 +1,4 @@
-import { MatrixND, VectorND, DefaultProcessing } from "../../index.mjs";
+import { MatrixND, VectorND, DefaultCompute } from "../../index.mjs";
 /**
  * Matrix multiply. matrix x vector
  * @param {GPUDevice} device 
@@ -47,7 +47,7 @@ async function matrixMultiplyMV(device, mat1, v1)
     }
     `
 
-    const processing = new DefaultProcessing(
+    const processing = new DefaultCompute(
         device,
         BUFFER_SIZE,
         shader
@@ -107,7 +107,7 @@ async function matrixMultiplyVM(device, v1, mat1)
     }
     `
 
-    const processing = new DefaultProcessing(
+    const processing = new DefaultCompute(
         device,
         BUFFER_SIZE,
         shader

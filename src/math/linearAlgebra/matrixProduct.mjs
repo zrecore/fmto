@@ -1,4 +1,4 @@
-import { MatrixND, VectorND, DefaultProcessing } from "../../index.mjs";
+import { MatrixND, VectorND, DefaultCompute } from "../../index.mjs";
 /**
  * Matrix product.
  * @param {GPUDevice} device 
@@ -54,7 +54,7 @@ async function matrixProduct(device, mat1, mat2)
     }
     `
 
-    const processing = new DefaultProcessing(
+    const processing = new DefaultCompute(
         device,
         BUFFER_SIZE,
         shader

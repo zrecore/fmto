@@ -1,4 +1,4 @@
-import { MatrixND, VectorND, DefaultProcessing } from "../../index.mjs";
+import { MatrixND, VectorND, DefaultCompute } from "../../index.mjs";
 /**
  * Component-wise scaling of a matrix using a scalar.
  * 
@@ -43,7 +43,7 @@ async function matrixScale(device, mat1, scalar1)
     }
     `
 
-    const processing = new DefaultProcessing(
+    const processing = new DefaultCompute(
         device,
         BUFFER_SIZE,
         shader

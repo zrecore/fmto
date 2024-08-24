@@ -10,7 +10,8 @@
 import Core from './core/index.mjs'
 
 // Defaults
-import { DefaultProcessing } from './default/default-processing.mjs'
+import { DefaultCompute } from './default/default-compute.mjs'
+import { DefaultRender } from './default/default-render.mjs'
 
 // Lib
 import { Vector2D, Vector3D, Vector4D, VectorND } from './lib/vector.mjs'
@@ -29,7 +30,8 @@ import {DifferentialEquations} from './math/differentialEquations/index.mjs'
 
 export {
     Core,
-    DefaultProcessing,
+    DefaultCompute,
+    DefaultRender,
 
     Vector2D,
     Vector3D,

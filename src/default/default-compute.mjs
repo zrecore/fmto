@@ -1,4 +1,6 @@
-class DefaultProcessing
+import { DefaultShaderAbstract } from "./default-shader-abstract.mjs"
+
+class DefaultCompute extends DefaultShaderAbstract
 {
     /**
      * Constructor. Setup a default compute processing pipeline.
@@ -9,42 +11,9 @@ class DefaultProcessing
      */
     constructor(device, buffer_size, shader, entry_point = "main")
     {
-        this._device = device
-        this._buffer_size = buffer_size
-        
-        this._shader = shader
-        this._entry_point = entry_point
-        // Reset stuff
-        this.teardown()
+        super(device, buffer_size, shader, entry_point)
     }
-    /**
-     * @type {GPUDevice}
-     */
-    get device()
-    {
-        return this._device
-    }
-    /**
-     * @type {number}
-     */
-    get bufferSize()
-    {
-        return this._buffer_size
-    }
-    /**
-     * @type {string}
-     */
-    get entryPoint()
-    {
-        return this._entry_point
-    }
-    /**
-     * @type {string}
-     */
-    get shader()
-    {
-        return this._shader
-    }
+    
     /**
      * @type {GPUBuffer}
      */
@@ -85,7 +54,7 @@ class DefaultProcessing
             this._bindGroupLayout = this
                 .device
                 .createBindGroupLayout(
-                    this.bindGroupLayoutMake()
+                    this.bindGroupLayoutConfig()
                 )
         }
         return this._bindGroupLayout
@@ -102,7 +71,7 @@ class DefaultProcessing
         if (!this._bindGroup)
         {
             this._bindGroup = this.device.createBindGroup(
-                this.createBindGroup()
+                this.createBindGroupConfig()
             )
         }
         return this._bindGroup
@@ -129,6 +98,7 @@ class DefaultProcessing
         return this._pipelineLayout
     }
     /**
+     * Specific to a compute shader setup.
      * @type {GPUComputePipeline}
      */
     get computePipeline()
@@ -139,7 +109,7 @@ class DefaultProcessing
                 .device
                 .pushErrorScope('validation')
 
-            const computePipelineConfig = this.createComputePipeline()
+            const computePipelineConfig = this.createComputePipelineConfig()
 
             this._computePipeline = this
                 .device
@@ -152,25 +122,13 @@ class DefaultProcessing
                 .then((error) => {
                     if (error)
                     {
-                        throw '/src/default/default-processing.mjs computePipeline() error:' + error.message
+                        throw '/src/default/default-compute.mjs computePipeline() error:' + error.message
                     }
                 })
         }
         return this._computePipeline
     }
-    /**
-     * @type {GPUCommandEncoder}
-     */
-    get commandEncoder()
-    {
-        if (!this._commandEncoder)
-        {
-            this._commandEncoder = this
-                .device
-                .createCommandEncoder()
-        }
-        return this._commandEncoder
-    }
+    
     /**
      * @type {GPUComputePassEncoder}
      */
@@ -192,53 +150,13 @@ class DefaultProcessing
                 .then((error) => {
                     if (error)
                     {
-                        throw '/src/default/default-processing.mjs passEncoder() error:' + error.message
+                        throw '/src/default/default-compute.mjs passEncoder() error:' + error.message
                     }
                 })
         }
         return this._passEncoder
     }
-    /**
-     * @type {string}
-     */
-    get shader()
-    {
-        return this._shader
-    }
-    /**
-     * @type {GPUShaderModule}
-     */
-    get shaderModule()
-    {
-        if (!this._shaderModule)
-        {
-            this.setupShaderModule()
-        }
-        return this._shaderModule
-    }
 
-    setupShaderModule()
-    {
-        this
-            .device
-            .pushErrorScope('validation')
-        
-        this._shaderModule = this
-            .device
-            .createShaderModule({
-                code: this.shader
-            })
-
-        this
-            .device
-            .popErrorScope()
-            .then((error) => {
-                if (error)
-                {
-                    throw '/src/default/default-processing.mjs setupShaderModule() error:' + error.message
-                }
-            })
-    }
     /**
      * Run the shader module in the compute processing pipeline
      * @returns {Float32Array}
@@ -283,7 +201,7 @@ class DefaultProcessing
             .then((error) => {
                 if (error)
                 {
-                    throw '/src/default/default-processing.mjs run() error, device.queue.submit(), commandEncoder.finish():' + error.message
+                    throw '/src/default/default-compute.mjs run() error, device.queue.submit(), commandEncoder.finish():' + error.message
                 }
             })
         
@@ -294,27 +212,22 @@ class DefaultProcessing
             this.bufferSize     // Length
         )
 
-        const copyArrayBuffer = this.stagingBuffer.getMappedRange(0, this.bufferSize)
+        const copyArrayBuffer = this
+            .stagingBuffer
+            .getMappedRange(0, this.bufferSize)
+        
         const data = copyArrayBuffer.slice()
         
-        this.stagingBuffer.unmap()
+        this
+            .stagingBuffer
+            .unmap()
+        
         const result = new Float32Array(data)
 
         return result
     }
 
-    teardown()
-    {
-        this._outputBuffer = null
-        this._stagingbuffer = null
-        this._bindGroupLayout = null
-        this._bindGroup = null
-        this._pipelineLayout = null
-        this._computePipeline = null
-        this._commandEncoder = null
-        this._passEncoder = null
-        this._shaderModule = null
-    }
+    
 
     outputBufferConfig () {
         return {
@@ -327,10 +240,11 @@ class DefaultProcessing
         return {
             size: this.bufferSize,
             usage: GPUBufferUsage.MAP_READ | GPUBufferUsage.COPY_DST
+            // mappedAtCreation: false // Default is false
         }
     }
 
-    bindGroupLayoutMake () {
+    bindGroupLayoutConfig () {
         return {
             entries: [
                 {
@@ -344,7 +258,7 @@ class DefaultProcessing
         }
     }
 
-    createBindGroup ()
+    createBindGroupConfig ()
     {
         return {
             layout: this.bindGroupLayout,
@@ -359,7 +273,7 @@ class DefaultProcessing
         }
     }
 
-    createComputePipeline ()
+    createComputePipelineConfig ()
     {
         return {
             layout: this.pipelineLayout,
@@ -370,9 +284,15 @@ class DefaultProcessing
         }
     }
 
-
+    teardown()
+    {
+        super.teardown()
+        this._outputBuffer = null
+        this._stagingbuffer = null
+        this._computePipeline = null
+    }
 }
 
 export {
-    DefaultProcessing
+    DefaultCompute
 }

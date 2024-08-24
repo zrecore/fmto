@@ -1,4 +1,4 @@
-import { DefaultProcessing, VectorND, MatrixND } from "../../index.mjs";
+import { VectorND, MatrixND, DefaultCompute } from "../../index.mjs";
 /**
  * Matrix subtract.
  * 
@@ -54,7 +54,7 @@ async function matrixSubtract(device, mat1, mat2)
         output = matResult;
     }
     `
-    const processing = new DefaultProcessing(
+    const processing = new DefaultCompute(
         device,
         BUFFER_SIZE,
         shader
