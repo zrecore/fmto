@@ -6,12 +6,13 @@ class DefaultRender extends DefaultShaderAbstract
      * Constructor. Setup a default compute processing pipeline.
      * @constructor
      * @param {GPUDevice} device The WebGPU device.
-     * @param {GPUTextureView} view Represents a specific view of a GPUTexture
-     * @param {Float32Array} vertices Vertices to draw
+     * @param {GPUTextureView} view Represents a specific view of a GPUTexture.
+     * @param {Float32Array} vertices Vertices to draw.
      * @param {number} buffer_size The buffer size to allocate. Note, must be at least 48 bytes.
      * @param {string} shader The WGSL (WebGPU Shading Language) markup to run.
      * @param {string} entry_point Default to "vertex_main" as the entry point function name.
      * @param {string} fragment_entry_point Default to "fragment_main" as fragment shader entry point function name.
+     * @param {string} target_format Default to "bgra8unorm". Must match canvas context format configuration.
      * @param {Object} clearColor Object representing rgba clear color: "r", "g", "b", and "a", where each is a value between 0.0 and 1.0
      */
     constructor(
@@ -39,50 +40,61 @@ class DefaultRender extends DefaultShaderAbstract
         this._target_format = target_format
         this._clearColor = clearColor
     }
+    /**
+     * @type {GPUTextureView}
+     */
     get view()
     {
         return this._view
     }
+    /**
+     * @type {GPUTextureView}
+     */
     set view(value)
     {
         this._view = value
     }
+    /**
+     * @type {Float32Array}
+     */
     get vertices()
     {
         return this._vertices
     }
+    /**
+     * @type {Float32Array}
+     */
     set vertices(values)
     {
         this._vertices = values
     }
+    /**
+     * @type {Object} RGBA clear color: "r", "g", "b", and "a", where each is a value between 0.0 and 1.0
+     */
     get clearColor()
     {
         return this._clearColor
     }
+    /**
+     * @type {Object} RGBA clear color: "r", "g", "b", and "a", where each is a value between 0.0 and 1.0
+     */
     set clearColor(value)
     {
         this._clearColor = this.clearColor
     }
+    /**
+     * @type {string}
+     */
     get targetFormat()
     {
         return this._target_format
     }
+    /**
+     * @type {string} 
+     */
     get fragmentEntryPoint()
     {
         return this._fragment_entry_point
-    }
-    get renderBuffer()
-    {
-        if (!this._render_buffer)
-        {
-            this._render_buffer = this
-                .device
-                .createBuffer(
-                    this.renderBufferConfig
-                )
-        }
-
-        return this._render_buffer
     }
     /**
      * @type {GPURenderPipeline}
@@ -127,7 +139,9 @@ class DefaultRender extends DefaultShaderAbstract
         }
         return this._passEncoder
     }
-
+    /**
+     * 
+     */
     get vertexBuffer()
     {
         if (!this._vertex_buffer)
@@ -148,7 +162,9 @@ class DefaultRender extends DefaultShaderAbstract
         }
         return this._vertex_buffer
     }
-
+    /**
+     * Run the shader module in the render pipeline
+     */
     async run()
     {
         this.setupShaderModule()
@@ -236,6 +252,7 @@ class DefaultRender extends DefaultShaderAbstract
     
     teardown()
     {
+        this._render_buffer = null
         this._vertex_buffer = null
         this._renderPipeline = null
         super.teardown()

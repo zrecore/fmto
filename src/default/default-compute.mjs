@@ -59,6 +59,9 @@ class DefaultCompute extends DefaultShaderAbstract
         }
         return this._bindGroupLayout
     }
+    /**
+     * @type {GPUBindGroupLayout}
+     */
     set bindGroupLayout(value)
     {
         this._bindGroupLayout = value
@@ -76,6 +79,9 @@ class DefaultCompute extends DefaultShaderAbstract
         }
         return this._bindGroup
     }
+    /**
+     * @type {GPUBindGroup}
+     */
     set bindGroup(value)
     {
         this._bindGroup = value
