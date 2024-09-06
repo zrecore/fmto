@@ -53,6 +53,7 @@
 					// Set up vertex buffer
 					const vertices = new Float32Array([
 						// point x, point y, point z, 	color r, color g, color b, color a
+						
 						-1.0, -1.0, 0, 		1, 0, 0, 1,
 						1.0, -1.0, 0, 		0, 1, 0, 1,
 						1.0, 1.0, 0, 		0, 1, 1, 1,
@@ -95,133 +96,8 @@
 						BUFFER_SIZE,
 						shader
 					)
-
-					// -- DefaultRender.renderBuffer()
-					/*const vertexBuffer = device.createBuffer({
-						size: vertices.byteLength,
-						usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
-						mappedAtCreation: true
-					})
-
-					new Float32Array(
-						vertexBuffer.getMappedRange()
-					)
-					.set(vertices)
-
-					// ...relinquish access to the GPU
-					vertexBuffer.unmap()
-
-					// Create the shader module
-					const shader = `
-						struct VertexOut {
-							@builtin(position) position: vec4<f32>,
-							@location(0) color: vec4<f32>
-						};
-
-						@vertex
-						fn vertex_main( @location(0) position: vec4<f32>,
-										@location(1) color: vec4<f32>) -> VertexOut
-						{
-							var output : VertexOut;
-							output.position = position;
-							output.color = color;
-
-							return output;
-						}
-
-						@fragment
-						fn fragment_main(fragData: VertexOut) -> @location(0) vec4<f32>
-						{
-							return fragData.color;
-						}
-					`
-					const shaderModule = device.createShaderModule({
-						code: shader
-					})
-
-					// Vertex buffer descriptor
-					const vertexBufferDescriptor = [{
-						attributes: [
-							{
-								shaderLocation: 0,
-								offset: 0,
-								format: "float32x3"
-							},
-							{
-								shaderLocation: 1,
-								offset: 12,
-								format: "float32x4"
-							}
-						],
-						arrayStride: 28,
-						stepMode: "vertex"
-					}]
-
-					// Render pipeline
-					const pipelineDescriptor = {
-						vertex: {
-							module: shaderModule,
-							entryPoint: "vertex_main",
-							buffers: vertexBufferDescriptor
-						},
-						fragment: {
-							module: shaderModule,
-							entryPoint: "fragment_main",
-							targets: [
-								{
-									format: "bgra8unorm"
-								}
-							]
-						},
-						primitive: {
-							topology: "triangle-list"
-						},
-						layout: "auto"
-					}
-
-					const renderPipeline = device.createRenderPipeline(
-						pipelineDescriptor
-					)
-
-					// Command encoder
-					const commandEncoder = device.createCommandEncoder()
-					// ... create the pass encoder
-					const clearColor = {
-						r: 0.2,
-						g: 0.2,
-						b: 0.2,
-						a: 1.0
-					}
-					const renderPassDescriptor = {
-						colorAttachments: [
-							{
-								loadValue: clearColor,
-								loadOp: "clear",
-								storeOp: "store", // tell the GPU to write the results to the view
-								view: context
-									.getCurrentTexture()
-									.createView()
-							}
-						]
-					}
-
-					const passEncoder = commandEncoder.beginRenderPass(
-						renderPassDescriptor
-					)
-
-					// Submit the draw operations
-					passEncoder.setPipeline(renderPipeline)
-					passEncoder.setVertexBuffer(0, vertexBuffer)
-					passEncoder.draw(4)
-					passEncoder.end()
-
-					// ...Submit
-					device
-						.queue
-						.submit([
-							commandEncoder.finish()
-						])
-							*/
+					
+					// Render!
 					render.run()
 				} else {
 					throw "Could not initialize WebGPU adapter or WebGPU device."
