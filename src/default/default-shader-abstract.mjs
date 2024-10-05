@@ -46,6 +46,9 @@ class DefaultShaderAbstract
     {
         return this._shader
     }
+    set shader(value) {
+        this._shader = value
+    }
     /**
      * @type {GPUShaderModule}
      */

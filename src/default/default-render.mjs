@@ -39,7 +39,65 @@ class DefaultRender extends DefaultShaderAbstract
         this._fragment_entry_point = fragment_entry_point
         this._target_format = target_format
         this._clearColor = clearColor
+
+        this._renderPipelineDescriptorConfig = {
+            vertex: {
+                module: this.shaderModule,
+                entryPoint: this.entryPoint, // vertex_main
+                buffers: this.vertexBufferDescriptorConfig()
+            },
+            fragment: {
+                module: this.shaderModule,
+                entryPoint: this.fragmentEntryPoint, // fragment_main
+                targets: [
+                    {
+                        format: this.targetFormat
+                    }
+                ]
+            },
+            primitive: {
+                topology: "triangle-list"
+            },
+            layout: "auto"
+        }
+
+        this._renderPassDescriptorConfig = {
+            colorAttachments: [
+                {
+                    loadValue: this.clearColor,
+                    loadOp: "clear",
+                    storeOp: "store", // tell the GPU to write the results to the view
+                    view: this.view
+                }
+            ]
+        }
     }
+    /**
+     * @type {JSON}
+     */
+    get renderPassDescriptorConfig() {
+        return this._renderPassDescriptorConfig
+    }
+    /**
+     * @type {JSON}
+     */
+    set renderPassDescriptorConfig(value) {
+        this._renderPassDescriptorConfig = value
+    }
+    /**
+     * @type {JSON}
+     */
+    get renderPipelineDescriptorConfig() {
+        return this._renderPipelineDescriptorConfig
+    }
+
+    /**
+     * @type {JSON}
+     */
+    set renderPipelineDescriptorConfig(value) {
+        this._renderPipelineDescriptorConfig = value
+    }
+
     /**
      * @type {GPUTextureView}
      */
@@ -104,7 +162,7 @@ class DefaultRender extends DefaultShaderAbstract
         if (!this._renderPipeline)
         {
             this._renderPipeline = this.device.createRenderPipeline(
-                this.renderPipelineDescriptorConfig()
+                this.renderPipelineDescriptorConfig
             )
         }
         return this._renderPipeline
@@ -124,7 +182,7 @@ class DefaultRender extends DefaultShaderAbstract
             this._passEncoder = this
                 .commandEncoder
                 .beginRenderPass(
-                    this.renderPassDescriptorConfig()
+                    this.renderPassDescriptorConfig
                 )
 
             this
@@ -163,16 +221,27 @@ class DefaultRender extends DefaultShaderAbstract
         return this._vertex_buffer
     }
     /**
-     * Run the shader module in the render pipeline
+     * Run the shader module in the render pipeline.
+     * Defaults vertexColsPerRow to 7
+     *  x, y, z, color r, color g, color b, color a
+     * 
+     * @param vertexCount Optional. Define how many colums per row are defined per vertex
      */
-    async run()
+    async run(vertexCount = 7, useVertexBuffer = true)
     {
         this.setupShaderModule()
 
         // Submit the draw operations
         this.passEncoder.setPipeline(this.renderPipeline)
-        this.passEncoder.setVertexBuffer(0, this.vertexBuffer)
-        this.passEncoder.draw(4)
+
+        if (useVertexBuffer) {
+            this.passEncoder.setVertexBuffer(0, this.vertexBuffer)
+
+            this.passEncoder.draw(this.vertices.length / vertexCount)
+        } else {
+            this.passEncoder.draw(vertexCount)
+        }
+        console.log('END')
         this.passEncoder.end()
 
         // ...Submit
@@ -211,44 +280,7 @@ class DefaultRender extends DefaultShaderAbstract
             stepMode: "vertex"
         }]
     }
-
-    renderPipelineDescriptorConfig()
-    {
-        return {
-            vertex: {
-                module: this.shaderModule,
-                entryPoint: this.entryPoint, // vertex_main
-                buffers: this.vertexBufferDescriptorConfig()
-            },
-            fragment: {
-                module: this.shaderModule,
-                entryPoint: this.fragmentEntryPoint, // fragment_main
-                targets: [
-                    {
-                        format: this.targetFormat
-                    }
-                ]
-            },
-            primitive: {
-                topology: "triangle-list"
-            },
-            layout: "auto"
-        }
-    }
-
-    renderPassDescriptorConfig()
-    {
-        return {
-            colorAttachments: [
-                {
-                    loadValue: this.clearColor,
-                    loadOp: "clear",
-                    storeOp: "store", // tell the GPU to write the results to the view
-                    view: this.view
-                }
-            ]
-        }
-    }
+    
     
     teardown()
     {

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" href="/test/img/favicon.ico" type="image/x-icon">
+		<title>FMTO - lib/matrix.test</title>
+		<link rel="stylesheet" type="text/css" href="/test/style.css" />
+	</head>
+	<body>
+		<h1>lib/matrix</h1>
+        <a href="/test/">Back to test index</a>
+        <p id="testDefaultRender">
+            <canvas id="gpuCanvasDefaultRender"></canvas>
+        </p>
+		<script type="module">
+			import {
+                Core,
+                DefaultRender
+            } from '/src/index.mjs'
+
+			try {
+                
+                const core = new Core()
+                
+                const hasAdapter = await core.initializeAdapter()
+                const hasDevice = await core.initializeDevice()
+                
+                if (hasAdapter && hasDevice) {
+                    const device = core.device
+                    const canvas = document.getElementById('gpuCanvasDefaultRender')
+                    const context = canvas.getContext('webgpu')
+                    context.configure({
+                        device,
+                        format: 'bgra8unorm'
+                    })
+
+                    // Set up vertex buffer
+                    const vertices = new Float32Array([
+                        // point x, point y, point z, 	color r, color g, color b, color a
+                        
+                        -1.0, -1.0, 0, 		1, 0, 0, 1,
+                        1.0, -1.0, 0, 		0, 1, 0, 1,
+                        1.0, 1.0, 0, 		0, 1, 1, 1,
+                        -1.0, 1.0, 0, 		0, 0, 1, 1
+                    ])
+                    const view = context
+                        .getCurrentTexture()
+                        .createView()
+                    
+                    const BUFFER_SIZE = vertices.byteLength
+                    // Create the shader module
+                    const shader = `
+                        struct VertexOut {
+                            @builtin(position) position: vec4<f32>,
+                            @location(0) color: vec4<f32>
+                        };
+
+                        @vertex
+                        fn vertex_main( @location(0) position: vec4<f32>,
+                                        @location(1) color: vec4<f32>) -> VertexOut
+                        {
+                            var output : VertexOut;
+                            output.position = position;
+                            output.color = color;
+
+                            return output;
+                        }
+
+                        @fragment
+                        fn fragment_main(fragData: VertexOut) -> @location(0) vec4<f32>
+                        {
+                            return fragData.color;
+                        }
+                    `
+
+                    const render = new DefaultRender(
+                        device,
+                        view,
+                        vertices,
+                        BUFFER_SIZE,
+                        shader
+                    )
+                    
+                    // Render!
+                    render.run()
+                } else {
+                    throw "Could not initialize WebGPU adapter or WebGPU device."
+                }
+            } catch (ex) {
+                console.error(ex)
+            }
+
+		</script>
+	</body>
+</html>
