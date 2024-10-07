@@ -36,35 +36,32 @@
     
                         // Create the shader module
                         const shader = `
-                            struct OurVertexShaderOutput {
-                                @builtin(position) position: vec4f, // The output of a coordinate the GPU uses to draw triangles/lines/points
-                                @location(0) color: vec4f,
-                            }
+                            struct OurStruct {
+                                color: vec4f,
+                                scale: vec2f,
+                                offset: vec2f,
+                            };
+
+                            @group(0) @binding(0) var<uniform> ourStruct: OurStruct;
     
                             @vertex fn vs(
                                 @builtin(vertex_index) vertexIndex : u32
-                            ) -> OurVertexShaderOutput {
+                            ) -> @builtin(position) vec4f {
                                 let pos = array(
-                                    vec2f( 0.0, 0.5 ), // top center
-                                    vec2f( -0.5, -0.5 ), // bottom left
-                                    vec2f( 0.5, -0.5 )
+                                    vec2f(0.0, 0.5), // top center
+                                    vec2f(-0.5, -0.5), // bottom left
+                                    vec2f(0.5, -0.5) // bottom right
                                 );
-                                var color = array<vec4f, 3>(
-                                    vec4f(1, 0, 0, 1), // red
-                                    vec4f(0, 1, 0, 1), // green
-                                    vec4f(0, 0, 1, 1), // blue
+
+                                return vec4f(
+                                    pos[vertexIndex] * ourStruct.scale + ourStruct.offset,
+                                    0.0,
+                                    1.0
                                 );
-                                var vsOutput: OurVertexShaderOutput;
-                                vsOutput.position = vec4f(pos[vertexIndex], 0.0, 1.0);
-                                vsOutput.color = color[vertexIndex];
-    
-                                return vsOutput;
                             }
     
-                            @fragment fn fs(
-                                @location(0) color: vec4f // this is an input - the pixel coordinate of the pixel the fragment shader is being asked to compute a color for.
-                            ) -> @location(0) vec4f {
-                                return color;
+                            @fragment fn fs() -> @location(0) vec4f {
+                                return ourStruct.color;
                             }
                         `
                         
@@ -80,16 +77,38 @@
                                 .getCurrentTexture()
                                 .createView()
 
+                            
+                            const uniformBufferSize =
+                                4 * 4 + // color is 4 32bit floats (4bytes each)
+                                2 * 4 + // scale is 2 32bit floats (4bytes each)
+                                2 * 4;  // offset is 2 32bit floats (4bytes each)
+                            const uniformBuffer = device.createBuffer({
+                                size: uniformBufferSize,
+                                usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
+                            })
+                            // create a typedarray to hold the values for the uniforms in JavaScript
+                            const uniformValues = new Float32Array( uniformBufferSize / 4)
+
+                            // Offsets to the various uniform values in float32 indices
+                            const kColorOffset = 0
+                            const kScaleOffset = 4
+                            const kOffsetOffset = 6
+
+                            uniformValues.set([0, 1, 0, 1], kColorOffset) // Set the color
+                            uniformValues.set([-0.5, -0.25], kOffsetOffset) // set the offset
+                            
                             const vertices = new Float32Array([])
-                            const BUFFER_SIZE = 0
-        
                             const render = new DefaultRender(
                                 device,
                                 view,
                                 vertices,
-                                BUFFER_SIZE,
-                                shader
+                                uniformBufferSize,
+                                shader,
+                                "vs",
+                                "fs"
                             )
+
+                            
 
                             render.renderPipelineDescriptorConfig = {
                                 label: 'hardcoded rgb triangle pipeline',
@@ -115,6 +134,24 @@
                                     },
                                 ],
                             }
+                            const bindGroup = render.device.createBindGroup({
+                                layout: render.renderPipeline.getBindGroupLayout(0),
+                                entries: [
+                                    {
+                                        binding: 0,
+                                        resource: {
+                                            buffer: uniformBuffer
+                                        }
+                                    }
+                                ]
+                            })
+                            const aspect = canvas.width / canvas.height
+                            uniformValues.set([0.5 / aspect, 0.5], kScaleOffset) // Set the scale
+
+                            // Copy the values from Javascript to the GPU
+                            render.device.queue.writeBuffer(uniformBuffer, 0, uniformValues)
+
+                            render.passEncoder.setBindGroup(0, bindGroup)
                             // Render!
                             console.log("RENDER")
                             render.run(3, false)

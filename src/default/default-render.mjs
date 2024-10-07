@@ -220,6 +220,10 @@ class DefaultRender extends DefaultShaderAbstract
         }
         return this._vertex_buffer
     }
+    set vertexBuffer(buffer)
+    {
+        this._vertex_buffer = buffer
+    }
     /**
      * Run the shader module in the render pipeline.
      * Defaults vertexColsPerRow to 7
