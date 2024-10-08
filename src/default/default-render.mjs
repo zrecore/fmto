@@ -231,7 +231,7 @@ class DefaultRender extends DefaultShaderAbstract
      * 
      * @param vertexCount Optional. Define how many colums per row are defined per vertex
      */
-    async run(vertexCount = 7, useVertexBuffer = true)
+    async run(vertexCount = 7, useVertexBuffer = true, endEncoder = true)
     {
         this.setupShaderModule()
 
@@ -245,15 +245,17 @@ class DefaultRender extends DefaultShaderAbstract
         } else {
             this.passEncoder.draw(vertexCount)
         }
-        console.log('END')
-        this.passEncoder.end()
 
-        // ...Submit
-        this.device
+        if (endEncoder) {
+            this.passEncoder.end()
+
+            // ...Submit
+            this.device
             .queue
             .submit([
                 this.commandEncoder.finish()
             ])
+        }
     }
 
     renderBufferConfig()
