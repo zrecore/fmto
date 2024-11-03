@@ -34,17 +34,12 @@
                         
                         // Create the shader module
                         const shader = `
-                            struct OurStruct {
-                                color: vec4f,
-                                offset: vec2f,
-                            };
-
-                            struct OtherStruct {
-                                scale: vec2f,
-                            }
-
+                            
                             struct Vertex {
                                 @location(0) position: vec2f,
+                                @location(1) color: vec4f,
+                                @location(2) offset: vec2f,
+                                @location(3) scale: vec2f,
                             }
 
                             struct VSOutput {
@@ -52,25 +47,18 @@
                                 @location(0) color: vec4f,
                             }
 
-                            @group(0) @binding(0) var<storage, read> ourStructs: array<OurStruct>;
-                            @group(0) @binding(1) var<storage, read> otherStructs: array<OtherStruct>;
-    
                             @vertex fn vs(
-                                vert: Vertex,
-                                @builtin(instance_index) instanceIndex : u32
+                                vert: Vertex
                             ) -> VSOutput {
-                                
-                                let otherStruct = otherStructs[instanceIndex];
-                                let ourStruct = ourStructs[instanceIndex];
 
                                 var vsOut : VSOutput;
                                 vsOut.position = vec4f(
-                                    vert.position * otherStruct.scale + ourStruct.offset,
+                                    vert.position * vert.scale + vert.offset,
                                     0.0,
                                     1.0
                                 );
 
-                                vsOut.color = ourStruct.color;
+                                vsOut.color = vert.color;
 
                                 return vsOut;
                             }
@@ -164,13 +152,12 @@
 
                             const staticUnitSize =
                                 4 * 4 + // color is 4 32bit floats (4bytes each)
-                                2 * 4 + // offset is 2 32bit floats (4bytes each)
-                                2 * 4   // padding
+                                2 * 4   // offset is 2 32bit floats (4bytes each)
                             const changingUnitSize =
                                 2 * 4  // scale is 2 32bit floats (4bytes each)
 
-                            const staticStorageBufferSize = staticUnitSize * kNumObjects
-                            const changingStorageBufferSize = changingUnitSize * kNumObjects
+                            const staticVertexBufferSize = staticUnitSize * kNumObjects
+                            const changingVertexBufferSize = changingUnitSize * kNumObjects
 
                             const render = new DefaultRender(
                                 device, 
@@ -187,30 +174,22 @@
                                 innerRadius: 0.25
                             })
 
-                            const vertexBuffer = render.device.createBuffer({
-                                label: 'vertex buffer vertices',
-                                size: vertexData.byteLength,
-                                usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST
+                            const staticVertexBuffer = render.device.createBuffer({
+                                label: 'static vertex for objects',
+                                size: staticVertexBufferSize,
+                                usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
                             })
 
-                            render.device.queue.writeBuffer(vertexBuffer, 0, vertexData)
-
-                            const staticStorageBuffer = render.device.createBuffer({
-                                label: 'static storage for objects',
-                                size: staticStorageBufferSize,
-                                usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
-                            })
-
-                            const changingStorageBuffer = render.device.createBuffer({
-                                label: 'changing storage for objects',
-                                size: changingStorageBufferSize,
-                                usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
+                            const changingVertexBuffer = render.device.createBuffer({
+                                label: 'changing vertex for objects',
+                                size: changingVertexBufferSize,
+                                usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
                             })
                             
                             
 
                             render.renderPipelineDescriptorConfig = {
-                                label: 'colored triangle',
+                                label: 'flat colors',
                                 layout: 'auto',
                                 vertex: {
                                     module: render.shaderModule,
@@ -220,6 +199,21 @@
                                             arrayStride: 2 * 4, // 2 floats, 4 bytes each
                                             attributes: [
                                                 { shaderLocation: 0, offset: 0, format: 'float32x2' }, // position (shaderLocation of 0 is @location(0))
+                                            ]
+                                        },
+                                        {
+                                            arrayStride: 6 * 4, // 6 floats, 4 bytes each
+                                            stepMode: 'instance',
+                                            attributes: [
+                                                { shaderLocation: 1, offset: 0, format: 'float32x4' }, // color
+                                                { shaderLocation: 2, offset: 16, format: 'float32x2' }, // offset
+                                            ],
+                                        },
+                                        {
+                                            arrayStride: 2 * 4, // 2 floats, 4 bytes each
+                                            stepMode: 'instance',
+                                            attributes: [
+                                                { shaderLocation: 3, offset: 0, format: 'float32x2' }, // scale
                                             ]
                                         }
                                     ]
@@ -245,57 +239,48 @@
                             }
 
                             {
-                                const staticStorageValues = new Float32Array(staticStorageBufferSize / 4)
+                                const staticVertexValues = new Float32Array(staticVertexBufferSize / 4)
                                 for (let i = 0; i < kNumObjects; i++) {
                                     const staticOffset = i * (staticUnitSize / 4)
 
                                     // These are only set once, so set them now.
-                                    staticStorageValues.set([rand(), rand(), rand(), 1], staticOffset + kColorOffset)
-                                    staticStorageValues.set([rand(-0.9, 0.9), rand(-0.9, 0.9)], staticOffset + kOffsetOffset)
+                                    staticVertexValues.set([rand(), rand(), rand(), 1], staticOffset + kColorOffset)
+                                    staticVertexValues.set([rand(-0.9, 0.9), rand(-0.9, 0.9)], staticOffset + kOffsetOffset)
 
                                     objectInfos.push({
                                         scale: rand(0.2, 0.5)
                                     })
                                 }
                                 render.device.queue.writeBuffer(
-                                    staticStorageBuffer,
+                                    staticVertexBuffer,
                                     0,
-                                    staticStorageValues
+                                    staticVertexValues
                                 )
                             }
-                            // A typed array we can use to update the changingStorageBuffer
-                            const storageValues = new Float32Array(changingStorageBufferSize / 4)
-                            const bindGroup = render.device.createBindGroup({
-                                label: 'bind group for objects',
-                                layout: render.renderPipeline.getBindGroupLayout(0),
-                                entries: [
-                                    {
-                                        binding: 0,
-                                        resource: {
-                                            buffer: staticStorageBuffer
-                                        }
-                                    },
-                                    {
-                                        binding: 1,
-                                        resource: {
-                                            buffer: changingStorageBuffer
-                                        }
-                                    }
-                                ]
+                            // A typed array we can use to update the changingVertexBuffer
+                            const vertexValues = new Float32Array(changingVertexBufferSize / 4)
+                            
+                            const vertexBuffer = render.device.createBuffer({
+                                label: 'vertex buffer vertices',
+                                size: vertexData.byteLength,
+                                usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST
                             })
 
+                            render.device.queue.writeBuffer(vertexBuffer, 0, vertexData)
                             
                             const aspect = canvas.width / canvas.height
 
+                            render.passEncoder.setVertexBuffer(0, vertexBuffer)
+                            render.passEncoder.setVertexBuffer(1, staticVertexBuffer)
+                            render.passEncoder.setVertexBuffer(2, changingVertexBuffer)
+
                             objectInfos.forEach(({scale}, ndx) => {
                                 const offset = ndx * (changingUnitSize / 4)
-                                storageValues.set([scale / aspect, scale], offset + kScaleOffset) // set the scale
+                                vertexValues.set([scale / aspect, scale], offset + kScaleOffset) // set the scale
                             })
                             // Upload all scales at once
-                            render.device.queue.writeBuffer(changingStorageBuffer, 0, storageValues)
+                            render.device.queue.writeBuffer(changingVertexBuffer, 0, vertexValues)
 
-                            render.passEncoder.setBindGroup(0, bindGroup)
-                            render.passEncoder.setVertexBuffer(0, vertexBuffer)
                             render.run(numVertices, false, false, kNumObjects)
                             
                             render.passEncoder.end()
