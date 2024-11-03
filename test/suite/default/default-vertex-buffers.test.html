@@ -40,6 +40,7 @@
                                 @location(1) color: vec4f,
                                 @location(2) offset: vec2f,
                                 @location(3) scale: vec2f,
+                                @location(4) perVertexColor: vec3f,
                             }
 
                             struct VSOutput {
@@ -58,7 +59,7 @@
                                     1.0
                                 );
 
-                                vsOut.color = vert.color;
+                                vsOut.color = vert.color * vec4f(vert.perVertexColor, 1);
 
                                 return vsOut;
                             }
@@ -77,13 +78,19 @@
                         } = {}) {
                             // 2 triangles per subdivision, 3 verts per tri, 2 values (xy) each.
                             const numVertices = numSubdivisions * 3 * 2
-                            const vertexData = new Float32Array(numSubdivisions * 2 * 3 * 2)
+                            const vertexData = new Float32Array(numVertices * (2 + 3))
 
                             let offset = 0
-                            const addVertex = (x, y) => {
+                            const addVertex = (x, y, r, g, b) => {
                                 vertexData[offset++] = x
                                 vertexData[offset++] = y
+                                vertexData[offset++] = r
+                                vertexData[offset++] = g
+                                vertexData[offset++] = b
                             }
+
+                            const innerColor = [1, 1, 1]
+                            const outerColor = [0.1, 0.1, 0.1]
 
                             // 2 triangles per subdivision
                             //
@@ -103,14 +110,14 @@
                                 const s2 = Math.sin(angle2)
 
                                 // First triangle
-                                addVertex(c1 * radius, s1 * radius)
-                                addVertex(c2 * radius, s2 * radius)
-                                addVertex(c1 * innerRadius, s1 * innerRadius)
+                                addVertex(c1 * radius, s1 * radius, ...outerColor)
+                                addVertex(c2 * radius, s2 * radius, ...outerColor)
+                                addVertex(c1 * innerRadius, s1 * innerRadius, ...innerColor)
 
                                 // Second triangle
-                                addVertex(c1 * innerRadius, s1 * innerRadius)
-                                addVertex(c2 * radius, s2 * radius)
-                                addVertex(c2 * innerRadius, s2 * innerRadius)
+                                addVertex(c1 * innerRadius, s1 * innerRadius, ...innerColor)
+                                addVertex(c2 * radius, s2 * radius, ...outerColor)
+                                addVertex(c2 * innerRadius, s2 * innerRadius, ...innerColor)
                             }
                             return {
                                 vertexData,
@@ -123,13 +130,13 @@
                         // With no arguments it will be [0 to 1)
                         const rand = (min, max) => {
                             if (min === undefined) {
-                            min = 0;
-                            max = 1;
+                                min = 0
+                                max = 1
                             } else if (max === undefined) {
-                            max = min;
-                            min = 0;
+                                max = min
+                                min = 0
                             }
-                            return min + Math.random() * (max - min);
+                            return min + Math.random() * (max - min)
                         };
                         
                         function renderCall() {
@@ -196,9 +203,10 @@
 
                                     buffers: [
                                         {
-                                            arrayStride: 2 * 4, // 2 floats, 4 bytes each
+                                            arrayStride: 5 * 4, // 5 floats, 4 bytes each
                                             attributes: [
                                                 { shaderLocation: 0, offset: 0, format: 'float32x2' }, // position (shaderLocation of 0 is @location(0))
+                                                { shaderLocation: 4, offset: 8, format: 'float32x3' }, // perVertexColor
                                             ]
                                         },
                                         {
