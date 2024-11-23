@@ -231,7 +231,7 @@ class DefaultRender extends DefaultShaderAbstract
      * 
      * @param vertexCount Optional. Define how many colums per row are defined per vertex
      */
-    async run(vertexCount = 7, useVertexBuffer = true, endEncoder = true, numberOfObjects = 0)
+    async run(vertexCount = 7, useVertexBuffer = true, endEncoder = true, numberOfObjects = 0, drawIndexed = false)
     {
         this.setupShaderModule()
 
@@ -247,7 +247,11 @@ class DefaultRender extends DefaultShaderAbstract
             if (numberOfObjects == 0) {
                 this.passEncoder.draw(vertexCount)
             } else {
-                this.passEncoder.draw(vertexCount, numberOfObjects)
+                if (true == drawIndexed) {
+                    this.passEncoder.drawIndexed(vertexCount, numberOfObjects)
+                } else {
+                    this.passEncoder.draw(vertexCount, numberOfObjects)
+                }
             }
         }
 

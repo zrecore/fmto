@@ -76,52 +76,69 @@
                             startAngle = 0,
                             endAngle = Math.PI * 2,
                         } = {}) {
-                            // 2 triangles per subdivision, 3 verts per tri, 2 values (xy) each.
-                            const numVertices = numSubdivisions * 3 * 2
-                            const vertexData = new Float32Array(numVertices * (2 + 3))
+                            // 2 vertices at each subdivision, +1 to wrap around the circle
+                            const numVertices = (numSubdivisions + 1) * 2
+                            const vertexData = new Float32Array(numVertices * (2 + 1))
+                            const colorData = new Uint8Array(vertexData.buffer)
 
                             let offset = 0
+                            let colorOffset = 8
+
                             const addVertex = (x, y, r, g, b) => {
                                 vertexData[offset++] = x
                                 vertexData[offset++] = y
-                                vertexData[offset++] = r
-                                vertexData[offset++] = g
-                                vertexData[offset++] = b
+                                offset += 1 // skip the color
+                                colorData[colorOffset++] = r * 255
+                                colorData[colorOffset++] = g * 255
+                                colorData[colorOffset++] = b * 255
+                                colorOffset += 9
                             }
 
                             const innerColor = [1, 1, 1]
                             const outerColor = [0.1, 0.1, 0.1]
 
                             // 2 triangles per subdivision
+                            // 
+                            // 0 2 4 6 8 ...
                             //
-                            // 0--1 4
-                            // | / /|
-                            // |/ / |
-                            // 2 3--5
+                            // 1 3 5 7 9 ...
+                            for (let i = 0; i <= numSubdivisions; ++i) {
+                                const angle = startAngle + (i + 0) * (endAngle - startAngle) / numSubdivisions
 
-                            for (let i = 0; i < numSubdivisions; ++i) {
-                                const angle1 = startAngle + (i + 0) * (endAngle - startAngle) / numSubdivisions
-                                const angle2 = startAngle + (i + 1) * (endAngle - startAngle) / numSubdivisions
+                                const c1 = Math.cos(angle)
+                                const s1 = Math.sin(angle)
 
-                                const c1 = Math.cos(angle1)
-                                const s1 = Math.sin(angle1)
-
-                                const c2 = Math.cos(angle2)
-                                const s2 = Math.sin(angle2)
-
-                                // First triangle
                                 addVertex(c1 * radius, s1 * radius, ...outerColor)
-                                addVertex(c2 * radius, s2 * radius, ...outerColor)
                                 addVertex(c1 * innerRadius, s1 * innerRadius, ...innerColor)
+                            }
 
-                                // Second triangle
-                                addVertex(c1 * innerRadius, s1 * innerRadius, ...innerColor)
-                                addVertex(c2 * radius, s2 * radius, ...outerColor)
-                                addVertex(c2 * innerRadius, s2 * innerRadius, ...innerColor)
+                            const indexData = new Uint32Array(numSubdivisions * 6)
+                            let ndx = 0
+
+                            // 1st tri.  2nd tri.  3rd tri.  4th tri.
+                            // 0 1 2     2 1 3     2 3 4     4 3 5
+                            //
+                            // 0--2         2      2--4         4      .....
+                            // | /         /|      | /         /|
+                            // |/         / |      |/         / |
+                            // 1         1--3      3         3--5      .....
+                            for (let i = 0; i < numSubdivisions; ++i) {
+                                const ndxOffset = i * 2;
+
+                                // first triangle
+                                indexData[ndx++] = ndxOffset
+                                indexData[ndx++] = ndxOffset + 1
+                                indexData[ndx++] = ndxOffset + 2
+
+                                // second triangle
+                                indexData[ndx++] = ndxOffset + 2
+                                indexData[ndx++] = ndxOffset + 1
+                                indexData[ndx++] = ndxOffset + 3
                             }
                             return {
                                 vertexData,
-                                numVertices
+                                indexData,
+                                numVertices: indexData.length
                             }
                         }
 
@@ -151,14 +168,14 @@
 
                             // Offsets to the various uniform values in float32 indices
                             const kColorOffset = 0
-                            const kScaleOffset = 0 // Not 4. Set to 0
-                            const kOffsetOffset = 4 // Not 6. Set to 4
+                            const kScaleOffset = 0
+                            const kOffsetOffset = 1
 
                             const kNumObjects = 100
                             const objectInfos = []
 
                             const staticUnitSize =
-                                4 * 4 + // color is 4 32bit floats (4bytes each)
+                                4 +     // color is 4 32bit floats (4bytes each)
                                 2 * 4   // offset is 2 32bit floats (4bytes each)
                             const changingUnitSize =
                                 2 * 4  // scale is 2 32bit floats (4bytes each)
@@ -176,7 +193,7 @@
                                 "fs"
                             )
 
-                            const { vertexData, numVertices } = createCircleVertices({
+                            const { vertexData, indexData, numVertices } = createCircleVertices({
                                 radius: 0.5,
                                 innerRadius: 0.25
                             })
@@ -196,25 +213,25 @@
                             
 
                             render.renderPipelineDescriptorConfig = {
-                                label: 'flat colors',
+                                label: 'per vertex colors',
                                 layout: 'auto',
                                 vertex: {
                                     module: render.shaderModule,
 
                                     buffers: [
                                         {
-                                            arrayStride: 5 * 4, // 5 floats, 4 bytes each
+                                            arrayStride: 2 * 4 + 4, // 2 floats, 4 bytes each + 4 bytes
                                             attributes: [
                                                 { shaderLocation: 0, offset: 0, format: 'float32x2' }, // position (shaderLocation of 0 is @location(0))
-                                                { shaderLocation: 4, offset: 8, format: 'float32x3' }, // perVertexColor
+                                                { shaderLocation: 4, offset: 8, format: 'unorm8x4' }, // perVertexColor
                                             ]
                                         },
                                         {
-                                            arrayStride: 6 * 4, // 6 floats, 4 bytes each
+                                            arrayStride: 4 + 2 * 4, // 4 bytes + 2 floats, 4 bytes each
                                             stepMode: 'instance',
                                             attributes: [
-                                                { shaderLocation: 1, offset: 0, format: 'float32x4' }, // color
-                                                { shaderLocation: 2, offset: 16, format: 'float32x2' }, // offset
+                                                { shaderLocation: 1, offset: 0, format: 'unorm8x4' }, // color
+                                                { shaderLocation: 2, offset: 4, format: 'float32x2' }, // offset
                                             ],
                                         },
                                         {
@@ -247,13 +264,22 @@
                             }
 
                             {
-                                const staticVertexValues = new Float32Array(staticVertexBufferSize / 4)
+                                const staticVertexValuesU8 = new Uint8Array(staticVertexBufferSize)
+                                const staticVertexValuesF32 = new Float32Array(staticVertexValuesU8.buffer)
+
                                 for (let i = 0; i < kNumObjects; i++) {
-                                    const staticOffset = i * (staticUnitSize / 4)
+                                    const staticOffsetU8 = i * staticUnitSize
+                                    const staticOffsetF32 = staticOffsetU8 / 4
 
                                     // These are only set once, so set them now.
-                                    staticVertexValues.set([rand(), rand(), rand(), 1], staticOffset + kColorOffset)
-                                    staticVertexValues.set([rand(-0.9, 0.9), rand(-0.9, 0.9)], staticOffset + kOffsetOffset)
+                                    staticVertexValuesU8.set( // Set the color
+                                        [rand() * 255, rand() * 255, rand() * 255, 255],
+                                        staticOffsetU8 + kColorOffset
+                                    )
+                                    staticVertexValuesF32.set(
+                                        [rand(-0.9, 0.9), rand(-0.9, 0.9)],
+                                        staticOffsetF32 + kOffsetOffset
+                                    )
 
                                     objectInfos.push({
                                         scale: rand(0.2, 0.5)
@@ -262,25 +288,34 @@
                                 render.device.queue.writeBuffer(
                                     staticVertexBuffer,
                                     0,
-                                    staticVertexValues
+                                    staticVertexValuesF32
                                 )
                             }
                             // A typed array we can use to update the changingVertexBuffer
                             const vertexValues = new Float32Array(changingVertexBufferSize / 4)
                             
                             const vertexBuffer = render.device.createBuffer({
-                                label: 'vertex buffer vertices',
+                                label: 'vertex buffer',
                                 size: vertexData.byteLength,
                                 usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST
                             })
 
                             render.device.queue.writeBuffer(vertexBuffer, 0, vertexData)
+
+                            const indexBuffer = render.device.createBuffer({
+                                label: 'index buffer',
+                                size: indexData.byteLength,
+                                usage: GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST
+                            })
+
+                            render.device.queue.writeBuffer(indexBuffer, 0, indexData)
                             
                             const aspect = canvas.width / canvas.height
 
                             render.passEncoder.setVertexBuffer(0, vertexBuffer)
                             render.passEncoder.setVertexBuffer(1, staticVertexBuffer)
                             render.passEncoder.setVertexBuffer(2, changingVertexBuffer)
+                            render.passEncoder.setIndexBuffer(indexBuffer, 'uint32')
 
                             objectInfos.forEach(({scale}, ndx) => {
                                 const offset = ndx * (changingUnitSize / 4)
@@ -289,7 +324,7 @@
                             // Upload all scales at once
                             render.device.queue.writeBuffer(changingVertexBuffer, 0, vertexValues)
 
-                            render.run(numVertices, false, false, kNumObjects)
+                            render.run(numVertices, false, false, kNumObjects, true)
                             
                             render.passEncoder.end()
                             render
