@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="icon" href="/test/img/favicon.ico" type="image/x-icon">
+		<title>FMTO - lib/default/default-textures.test</title>
+		<link rel="stylesheet" type="text/css" href="/test/style.css" />
+	</head>
+	<body>
+		<h1>lib/default/default-textures.test</h1>
+        <a href="/test/">Back to test index</a>
+        <p id="testDefaultRender">
+            <canvas id="gpuCanvasDefaultRender"></canvas>
+        </p>
+		<script type="module">
+			import {
+                Core,
+                DefaultRender
+            } from '/src/index.mjs'
+
+            async function main() {
+                try {
+                    const core = new Core()
+                    
+                    const hasAdapter = await core.initializeAdapter()
+                    const hasDevice = await core.initializeDevice()
+                    
+                    if (hasAdapter && hasDevice) {
+                        const device = core.device
+                        const canvas = document.getElementById('gpuCanvasDefaultRender')
+                        const context = canvas.getContext('webgpu')
+                        const presentationFormat = navigator.gpu.getPreferredCanvasFormat()
+                        
+                        
+    
+                        // Create the shader module
+                        const shader = `
+                            struct OurVertexShaderOutput {
+                                @builtin(position) position: vec4f,
+                                @location(0) texcoord: vec2f,
+                            };
+    
+                            @vertex fn vs(
+                                @builtin(vertex_index) vertexIndex : u32
+                            ) -> OurVertexShaderOutput {
+                                let pos = array(
+                                    // 1st triangle
+                                    vec2f(0.0, 0.0), // center
+                                    vec2f(1.0, 0.0), // right, center
+                                    vec2f(0.0, 1.0), // center, top
+
+                                    // 2nd triangle
+                                    vec2f(0.0, 1.0), // center, top
+                                    vec2f(1.0, 0.0), // right, center
+                                    vec2f(1.0, 1.0), // right, top
+                                );
+                                var vsOutput: OurVertexShaderOutput;
+                                let xy = pos[vertexIndex];
+                                vsOutput.position = vec4f(xy, 0.0, 1.0);
+                                vsOutput.texcoord = xy;
+    
+                                return vsOutput;
+                            }
+
+                            @group(0) @binding(0) var ourSampler: sampler;
+                            @group(0) @binding(1) var ourTexture: texture_2d<f32>;
+    
+                            @fragment fn fs(fsInput: OurVertexShaderOutput) -> @location(0) vec4f {
+                                return textureSample(ourTexture, ourSampler, fsInput.texcoord);
+                            }
+                        `
+                        
+                        function renderCall() {
+                            context.configure({
+                                device,
+                                format: presentationFormat
+                            })
+        
+                            const view = context
+                                .getCurrentTexture()
+                                .createView()
+
+                            const vertices = new Float32Array([])
+                            const BUFFER_SIZE = 0
+
+                            const kTextureWidth = 5;
+                            const kTextureHeight = 7;
+                            const _ = [255, 0, 0, 255];   // red
+                            const y = [255, 255, 0, 255]; // yellow
+                            const b = [0, 0, 255, 255];   // blue
+
+                            const textureData = new Uint8Array([
+                                b, _, _, _, _,
+                                _, y, y, y, _,
+                                _, y, _, _, _,
+                                _, y, y, _, _,
+                                _, y, _, _, _,
+                                _, y, _, _, _,
+                                _, _, _, _, _,
+                            ].flat())
+        
+                            const render = new DefaultRender(
+                                device,
+                                view,
+                                vertices,
+                                BUFFER_SIZE,
+                                shader
+                            )
+
+                            const texture = render.device.createTexture({
+                                size: [kTextureWidth, kTextureHeight],
+                                format: 'rgba8unorm',
+                                usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST
+                            })
+
+                            render.device.queue.writeTexture(
+                                { texture },
+                                textureData,
+                                { bytesPerRow: kTextureWidth * 4 },
+                                { width: kTextureWidth, height: kTextureHeight }
+                            )
+
+                            const sampler = render.device.createSampler()
+
+                            render.renderPipelineDescriptorConfig = {
+                                label: 'hardcoded rgb triangle pipeline',
+                                layout: 'auto',
+                                vertex: {
+                                    module: render.shaderModule,
+                                },
+                                fragment: {
+                                    module: render.shaderModule,
+                                    targets: [{ format: presentationFormat }],
+                                },
+                            }
+
+                            render.renderPassDescriptorConfig =  {
+                                label: 'our basic canvas renderPass',
+                                colorAttachments: [
+                                    {
+                                        //view: render.view, // To be filled out when we render
+
+                                        clearValue: [0.3, 0.3, 0.3, 1],
+                                        loadOp: 'clear',
+                                        storeOp: 'store',
+                                    },
+                                ],
+                            }
+
+                            const bindGroup = render.device.createBindGroup({
+                                layout: render.renderPipeline.getBindGroupLayout(0),
+                                entries: [
+                                    { binding: 0, resource: sampler },
+                                    { binding: 1, resource: texture.createView() }
+                                ]
+                            })
+                            // Render!
+                            console.log("RENDER")
+
+                            render.setupShaderModule()
+                            render.renderPassDescriptorConfig
+                                    .colorAttachments[0]
+                                    .view = context
+                                                .getCurrentTexture()
+                                                .createView()
+
+                            const encoder = render.device.createCommandEncoder({
+                                label: 'render quad encoder'
+                            })
+                            const pass = encoder.beginRenderPass(
+                                render.renderPassDescriptorConfig
+                            )
+                            pass.setPipeline(render.renderPipeline)
+                            pass.setBindGroup(0, bindGroup)
+                            pass.draw(6) // Call our vertex shader
+                            pass.end()
+                            /*render
+                                .passEncoder
+                                .setPipeline(
+                                    render.renderPipeline
+                                )
+                            render
+                                .passEncoder
+                                .setBindGroup(
+                                    0,
+                                    bindGroup
+                                )
+                            render
+                                .passEncoder
+                                .draw(6)
+
+                            render.passEncoder.end()
+                            */
+                            const commandBuffer = encoder.finish()
+                            render.device.queue.submit([commandBuffer])
+                        }
+                        
+                        const observer = new ResizeObserver(entries => {
+                            for (const entry of entries) {
+
+                                const canvas = entry.target
+                                const width = entry.contentBoxSize[0].inlineSize
+                                const height = entry.contentBoxSize[0].blockSize
+                                
+                                canvas.width = Math.max(1, Math.min(width, device.limits.maxTextureDimension2D))
+                                canvas.height = Math.max(1, Math.min(height, device.limits.maxTextureDimension2D))
+    
+                                renderCall()
+                            }
+                        })
+    
+                        observer.observe(canvas)
+                    } else {
+                        throw "Could not initialize WebGPU adapter or WebGPU device."
+                    }
+                } catch (ex) {
+                    console.error(ex)
+                }
+			}
+            main()
+
+		</script>
+	</body>
+</html>
