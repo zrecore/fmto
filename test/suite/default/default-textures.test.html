@@ -58,7 +58,11 @@
                                 var vsOutput: OurVertexShaderOutput;
                                 let xy = pos[vertexIndex];
                                 vsOutput.position = vec4f(xy, 0.0, 1.0);
-                                vsOutput.texcoord = xy;
+
+                                //vsOutput.texcoord = xy;
+
+                                // Flip the texture coordinates
+                                vsOutput.texcoord = vec2f(xy.x, 1.0 - xy.y);
     
                                 return vsOutput;
                             }
