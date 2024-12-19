@@ -10,8 +10,14 @@
 	<body>
 		<h1>lib/default/webgpu-translation.test</h1>
         <a href="/test/">Back to test index</a>
+        <div>
+            <label>Translate X</label><input id="translateX" type="number" min="0" max="1000" value="0" />
+        </div>
+        <div>
+            <label>Translate Y</label><input id="translateY" type="number" min="0" max="1000" value="0" />
+        </div>
         <p id="testDefaultRender">
-            <canvas id="gpuCanvasDefaultRender"></canvas>
+            <canvas id="gpuCanvasDefaultRender" class="hatched"></canvas>
         </p>
 		<script type="module">
 			import {
@@ -71,6 +77,8 @@
                             struct Uniforms {
                                 color: vec4f,
                                 resolution: vec2f,
+
+                                translation: vec2f,
                             };
 
                             struct Vertex {
@@ -89,7 +97,7 @@
 
                                 var vsOut : VSOutput;
                                 
-                                let position = vert.position;
+                                let position = vert.position + uni.translation;
 
                                 // convert the position from pixels to a 0.0 to 1.0 value
                                 let zeroToOne = position / uni.resolution;
@@ -112,7 +120,34 @@
                                 return uni.color;
                             }
                         `
+                        
+                        const settings = {
+                            translation: [0, 0]
+                        }
 
+                        function handleTranslationChange(ev) {
+                            let x = parseFloat(document.getElementById('translateX').value)
+                            let y = parseFloat(document.getElementById('translateY').value)
+
+                            if (x < 0) x = 0
+                            if (x > 1000) x = 1000
+
+                            if (y < 0) y = 0
+                            if (y > 1000) y = 1000
+
+                            settings.translation = [x, y]
+                            console.log("translation", settings.translation)
+
+                            renderCall()
+                        }
+
+                        function setupTranslationControls() {
+                            const controlX = document.getElementById('translateX')
+                            const controlY = document.getElementById('translateY')
+
+                            controlX.addEventListener("change", handleTranslationChange)
+                            controlY.addEventListener("change", handleTranslationChange)
+                        }
                         
                         function renderCall() {
                             context.configure({
@@ -128,6 +163,7 @@
                             // Offsets to the various uniform values in float32 indices
                             const kColorOffset = 0
                             const kResolutionOffset = 4
+                            const kTranslationOffset = 6
 
                             const { vertexData, indexData, numVertices } = createFVertices()
                             
@@ -169,15 +205,14 @@
                                     {
                                         view: render.view,
 
-                                        clearValue: [0.3, 0.3, 0.3, 1],
                                         loadOp: 'clear',
                                         storeOp: 'store',
                                     },
                                 ],
                             }
 
-                            // color, resolution, padding
-                            const uniformBufferSize = (4 + 2) * 4 + 8
+                            // color, resolution, translation
+                            const uniformBufferSize = (4 + 2 + 2) * 4
                             const uniformBuffer = render.device.createBuffer({
                                 label: 'uniforms',
                                 size: uniformBufferSize,
@@ -185,8 +220,9 @@
                             })
                             const uniformValues = new Float32Array(uniformBufferSize / 4)
 
-                            const colorValue = uniformValues.subarray([kColorOffset, kColorOffset + 4])
+                            const colorValue = uniformValues.subarray(kColorOffset, kColorOffset + 4)
                             const resolutionValue = uniformValues.subarray(kResolutionOffset, kResolutionOffset + 2)
+                            const translationValue = uniformValues.subarray(kTranslationOffset, kTranslationOffset + 2)
 
                             // The color will not change so let's set it once at init time
                             colorValue.set([
@@ -229,6 +265,7 @@
 
                             // set the uniform values in our Javascript side Float32Array
                             resolutionValue.set([canvas.width, canvas.height])
+                            translationValue.set(settings.translation)
 
                             render.device.queue.writeBuffer(uniformBuffer, 0, uniformValues)
 
@@ -259,6 +296,8 @@
                         })
     
                         observer.observe(canvas)
+
+                        setupTranslationControls()
                     } else {
                         throw "Could not initialize WebGPU adapter or WebGPU device."
                     }
@@ -266,7 +305,13 @@
                     console.error(ex)
                 }
 			}
-            main()
+
+            document.onreadystatechange = () => {
+                console.log("document.readyState", document.readyState)
+                if (document.readyState == "complete" ) {
+                    main()
+                }
+            }
 
 		</script>
 	</body>
