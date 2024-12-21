@@ -85,3 +85,19 @@ body > ol li:nth-child(odd) a {
     background-position: -1.5px -1.5px, -1.5px -1.5px, -1px -1px, -1px -1px;
     background-size: 100px 100px, 100px 100px, 10px 10px, 10px 10px;  
 }
+
+#circle {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    width: 300px;
+    background-color: var(--bg-color)
+}
+
+label {
+    margin: 0.25rem;
+}
+
+.flex {
+    display: flex
+}
