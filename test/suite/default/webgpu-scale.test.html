@@ -27,10 +27,10 @@
             </div>
             <div>
                 <div>
-                    <label>Scale X</label><input id="scaleX" type="number" min="0" max="10" value="10" />
+                    <label>Scale X</label><input id="scaleX" type="number" min="-10" max="10" value="10" />
                 </div>
                 <div>
-                    <label>Scale Y</label><input id="scaleY" type="number" min="0" max="10" value="10" />
+                    <label>Scale Y</label><input id="scaleY" type="number" min="-10" max="10" value="10" />
                 </div>
             </div>
         </div>
@@ -198,9 +198,9 @@
                             let x = parseInt(document.getElementById('scaleX').value)
                             let y = parseInt(document.getElementById('scaleY').value)
 
-                            if (x < 0) x = 0
+                            if (x < -10) x = -10
                             if (x > 10) x = 10
-                            if (y < 0) y = 0
+                            if (y < -10) y = -10
                             if (y > 10) y = 10
 
                             settings.scale = [ x / 10, y / 10]
